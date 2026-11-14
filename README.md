@@ -7,7 +7,8 @@ Página estática: HTML, CSS e JavaScript puros, sem build.
 - **Modo Treino**: gabarito e comentário logo após cada item.
 - **Modo Simulado**: cronômetro, folha de respostas, opção de deixar em branco e correção ao final.
 - **Nota líquida CEBRASPE**: acertos − erros (em branco não pontua).
-- Filtros por assunto, por itens não respondidos e por itens que você errou.
+- Filtros por assunto, por **origem** (PRF 2021, PC-PE 2024, PF 2025, FUB 2025, SEPLAG-AL 2026 ou banco geral), por itens não respondidos e por itens que você errou.
+- Página **Relação de matérias** (`relacao.html`): edital de Informática da PRF × incidência nas provas CEBRASPE recentes.
 - Desempenho por assunto, revisão comentada e “Refazer erradas”.
 - Atalhos: `C` = Certo, `E` = Errado, `→`/`Enter` = próxima, `←` = anterior.
 - Progresso salvo no navegador (localStorage).
@@ -19,7 +20,7 @@ python3 -m http.server 8000
 Depois abra http://localhost:8000.
 
 ## Adicionar questões
-Edite `data/informatica.js` (o formato está documentado no topo do arquivo).
+Edite `data/informatica.js` (banco geral) ou `data/informatica-provas.js` (itens adaptados de provas, com os campos `fonte` e `ref`). O formato está documentado no topo de cada arquivo.
 Para outra disciplina, crie `data/<disciplina>.js` no mesmo formato e inclua o `<script>` em `index.html`.
 
-> As questões são inéditas, elaboradas no estilo da banca para estudo. Não são itens oficiais de provas anteriores.
+> Os itens são escritos no estilo da banca, para estudo. Os itens com origem em uma prova foram adaptados com redação própria a partir dos assuntos cobrados e não reproduzem o texto oficial.

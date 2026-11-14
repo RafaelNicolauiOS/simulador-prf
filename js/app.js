@@ -43,11 +43,27 @@
   }
 
   /* ---------- Tela inicial ---------- */
-  var selDisc = $('#disciplina'), boxTemas = $('#temas');
+  var selDisc = $('#disciplina'), boxTemas = $('#temas'), selFonte = $('#fonte');
+  var GERAL = 'Inéditas (banco geral)', PROVAS = '__provas';
+  function fonteDe(q) { return q.fonte || GERAL; }
+
+  function montarFontes() {
+    var fs = unicos(BANCO.filter(function (q) { return q.disciplina === selDisc.value; }).map(fonteDe));
+    var provas = fs.filter(function (f) { return f !== GERAL; }).sort(function (a, b) {
+      return b.slice(-4) - a.slice(-4) || a.localeCompare(b);
+    });
+    var cont = function (f) { return BANCO.filter(function (q) { return q.disciplina === selDisc.value && (f === PROVAS ? !!q.fonte : fonteDe(q) === f); }).length; };
+    var opts = '<option value="">Todas as origens</option>';
+    if (provas.length) opts += '<option value="' + PROVAS + '">Provas recentes – todas (' + cont(PROVAS) + ')</option>';
+    provas.forEach(function (f) { opts += '<option value="' + esc(f) + '">' + esc(f) + ' (' + cont(f) + ')</option>'; });
+    if (fs.indexOf(GERAL) >= 0) opts += '<option value="' + esc(GERAL) + '">' + esc(GERAL) + ' (' + cont(GERAL) + ')</option>';
+    selFonte.innerHTML = opts;
+  }
 
   function montarDisciplinas() {
     var ds = unicos(BANCO.map(function (q) { return q.disciplina; }));
     selDisc.innerHTML = ds.map(function (d) { return '<option>' + esc(d) + '</option>'; }).join('');
+    montarFontes();
     montarTemas();
   }
   function montarTemas() {
@@ -60,9 +76,10 @@
   }
   function filtrarBanco() {
     var temas = Array.prototype.map.call(boxTemas.querySelectorAll('input:checked'), function (i) { return i.value; });
-    var filtro = $('#filtro').value;
+    var filtro = $('#filtro').value, fonte = selFonte.value;
     return BANCO.filter(function (q) {
       if (q.disciplina !== selDisc.value || temas.indexOf(q.tema) < 0) return false;
+      if (fonte === PROVAS ? !q.fonte : fonte && fonteDe(q) !== fonte) return false;
       var s = db.q[q.id];
       if (filtro === 'ineditas') return !s;
       if (filtro === 'erradas') return s && s.ult === false;
@@ -103,7 +120,8 @@
     };
   }
 
-  selDisc.addEventListener('change', montarTemas);
+  selDisc.addEventListener('change', function () { montarFontes(); montarTemas(); });
+  selFonte.addEventListener('change', atualizarInfo);
   boxTemas.addEventListener('change', atualizarInfo);
   $('#filtro').addEventListener('change', atualizarInfo);
 
@@ -139,6 +157,8 @@
     $('#progress-bar').style.width = ((S.i + 1) / n * 100) + '%';
     $('#q-tema').textContent = q.tema;
     $('#q-id').textContent = '#' + q.id;
+    $('#q-fonte').textContent = q.fonte ? q.fonte + (q.ref ? ' · ' + q.ref : '') : '';
+    $('#q-fonte').hidden = !q.fonte;
     $('#q-texto').textContent = q.enunciado;
 
     var travado = S.modo === 'treino' && S.revelado[q.id];
@@ -254,7 +274,7 @@
     $('#revisao').innerHTML = S.lista.map(function (q, idx) {
       var r = S.resp[q.id], cls = !r ? 'blank' : r === q.gabarito ? 'ok' : 'bad';
       var sua = !r ? 'em branco' : r === 'C' ? 'Certo' : 'Errado';
-      return '<div class="rev ' + cls + '"><div class="rev-head"><span>' + (idx + 1) + '. ' + esc(q.tema) + ' · #' + q.id + '</span>' +
+      return '<div class="rev ' + cls + '"><div class="rev-head"><span>' + (idx + 1) + '. ' + esc(q.tema) + (q.fonte ? ' · ' + esc(q.fonte) : '') + ' · #' + q.id + '</span>' +
         '<span>Sua resposta: <span class="pill ' + (cls === 'blank' ? '' : cls) + '">' + sua + '</span> · Gabarito: <b>' +
         (q.gabarito === 'C' ? 'Certo' : 'Errado') + '</b></span></div>' +
         '<p>' + esc(q.enunciado) + '</p><p class="coment">' + esc(q.comentario) + '</p></div>';

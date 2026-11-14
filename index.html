@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2">
+  <link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body>
   <header class="topbar">
@@ -17,6 +17,7 @@
         <span class="brand-mark">PRF</span>
         <span class="brand-text">Simulador <small>Certo ou Errado · estilo CEBRASPE</small></span>
       </a>
+      <nav class="topnav"><a href="relacao.html">Relação de matérias</a></nav>
     </div>
   </header>
 
@@ -41,6 +42,11 @@
             <span>Assuntos</span>
             <div id="temas" class="chips"></div>
           </div>
+
+          <label class="field">
+            <span>Origem</span>
+            <select id="fonte"></select>
+          </label>
 
           <div class="row">
             <label class="field">
@@ -93,7 +99,7 @@
       <div class="progress"><div id="progress-bar"></div></div>
 
       <article class="card question">
-        <div class="q-tags"><span id="q-tema" class="tag"></span><span id="q-id" class="muted"></span></div>
+        <div class="q-tags"><span><span id="q-tema" class="tag"></span> <span id="q-fonte" class="tag tag-fonte"></span></span><span id="q-id" class="muted"></span></div>
         <p id="q-texto" class="q-text"></p>
 
         <div class="answers">
@@ -146,10 +152,11 @@
   </main>
 
   <footer class="wrap footer">
-    Questões inéditas elaboradas no estilo CEBRASPE para estudo. Não são itens oficiais de provas anteriores.
+    Itens elaborados no estilo CEBRASPE para estudo. Os marcados com o nome de uma prova foram adaptados (redação própria) de assuntos cobrados nela, e não reproduzem o texto oficial.
   </footer>
 
-  <script src="data/informatica.js?v=2"></script>
-  <script src="js/app.js?v=2"></script>
+  <script src="data/informatica.js?v=3"></script>
+  <script src="data/informatica-provas.js?v=3"></script>
+  <script src="js/app.js?v=3"></script>
 </body>
 </html>

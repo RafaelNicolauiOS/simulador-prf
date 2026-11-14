@@ -213,3 +213,30 @@ select {
   .btn-answer { padding: 12px 6px; gap: 6px; }
   .quiz-nav .btn { padding: 9px 12px; }
 }
+
+/* Navegação e origem */
+.topbar-inner { justify-content: space-between; gap: 12px; }
+.topnav a { color: var(--muted); text-decoration: none; font-size: .9rem; font-weight: 500; }
+.topnav a:hover, .topnav a.ativo { color: var(--accent); }
+.tag-fonte { background: transparent; border: 1px solid var(--line); color: var(--muted); font-weight: 500; }
+.q-tags > span:first-child { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* Página de relação */
+.doc h1 { font-size: clamp(1.4rem, 3.5vw, 1.9rem); }
+.doc h2 { margin-top: 32px; font-size: 1.15rem; }
+.doc p, .doc li { color: var(--text); }
+.doc .lead { color: var(--muted); max-width: 680px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); background: var(--bg); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.c { text-align: center; white-space: nowrap; }
+.hit { display: inline-block; min-width: 26px; padding: 2px 6px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); font-weight: 600; font-size: .78rem; }
+.miss { color: var(--line); }
+.badge-novo { font-size: .7rem; font-weight: 700; color: var(--warn); border: 1px solid currentColor; border-radius: 999px; padding: 1px 7px; margin-left: 6px; white-space: nowrap; }
+.cards-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.cards-3 .card h3 { margin-bottom: 6px; }
+.cards-3 .card p { margin: 0; font-size: .9rem; color: var(--muted); }
+.fontes { font-size: .85rem; color: var(--muted); padding-left: 18px; }
+.fontes a { color: var(--accent); word-break: break-word; }

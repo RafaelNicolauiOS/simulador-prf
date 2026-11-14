@@ -276,7 +276,7 @@ window.QUESTOES = (window.QUESTOES || []).concat([
     comentario: 'Correto. O operador // faz a divisão inteira (com arredondamento para baixo). Já 7 / 2 resulta em 3.5, e 7 % 2 resulta em 1.'
   },
   {
-    id: 'INF-051', disciplina: 'Informática', tema: 'Nuvem, Dados e IA', gabarito: 'E',
+    id: 'INF-051', disciplina: 'Informática', tema: 'Bancos de Dados', gabarito: 'E',
     enunciado: 'Em um banco de dados relacional, a chave primária de uma tabela pode conter valores repetidos, desde que nenhum deles seja nulo.',
     comentario: 'Errado. A chave primária deve ser única e não nula, pois identifica cada registro da tabela.'
   }

@@ -26,9 +26,9 @@ window.QUESTOES = (window.QUESTOES || []).concat([
     comentario: 'Errado. O HTTPS usa, por padrão, a porta 443 (a 80 é do HTTP) e se apoia em TLS, que utiliza certificados digitais para autenticar o servidor e negociar a criptografia.'
   },
   {
-    id: 'INF-003', disciplina: 'Informática', tema: 'Redes e Internet', gabarito: 'C',
-    enunciado: 'O DNS é o serviço responsável por traduzir nomes de domínio, como www.gov.br, em endereços IP.',
-    comentario: 'Correto. O DNS (Domain Name System) faz a resolução de nomes em endereços IP, permitindo que o usuário acesse sítios sem memorizar números.'
+    id: 'INF-003', disciplina: 'Informática', tema: 'Redes e Internet', gabarito: 'E',
+    enunciado: 'O DNS é o serviço responsável por atribuir automaticamente endereços IP aos computadores que ingressam em uma rede local.',
+    comentario: 'Errado. Quem atribui IPs automaticamente é o DHCP. O DNS traduz nomes de domínio (como www.gov.br) em endereços IP.'
   },
   {
     id: 'INF-004', disciplina: 'Informática', tema: 'Redes e Internet', gabarito: 'E',
@@ -46,9 +46,9 @@ window.QUESTOES = (window.QUESTOES || []).concat([
     comentario: 'Correto. A VPN (Virtual Private Network) encapsula e cifra o tráfego, garantindo confidencialidade no acesso remoto à rede interna.'
   },
   {
-    id: 'INF-007', disciplina: 'Informática', tema: 'Redes e Internet', gabarito: 'C',
-    enunciado: 'Na topologia em estrela, todos os dispositivos se conectam a um nó central, de modo que a falha de um computador periférico não interrompe a comunicação entre os demais.',
-    comentario: 'Correto. Na estrela, cada estação tem ligação própria com o concentrador (switch). A falha de uma estação não afeta as outras, mas a falha do nó central derruba a rede.'
+    id: 'INF-007', disciplina: 'Informática', tema: 'Redes e Internet', gabarito: 'E',
+    enunciado: 'Na topologia em estrela, todos os dispositivos se conectam a um nó central, razão pela qual a falha desse nó central não compromete a comunicação entre os demais dispositivos.',
+    comentario: 'Errado. O nó central (switch) é o ponto único de falha da estrela: se ele falhar, a rede para. A falha de um computador periférico, por outro lado, não afeta os demais.'
   },
   {
     id: 'INF-008', disciplina: 'Informática', tema: 'Redes e Internet', gabarito: 'C',
@@ -78,9 +78,9 @@ window.QUESTOES = (window.QUESTOES || []).concat([
     comentario: 'Errado. A relação está invertida: o SMTP é usado para envio (e transferência entre servidores); POP3 e IMAP são usados para recebimento.'
   },
   {
-    id: 'INF-013', disciplina: 'Informática', tema: 'Navegadores e E-mail', gabarito: 'C',
-    enunciado: 'O protocolo IMAP permite que as mensagens permaneçam armazenadas no servidor, o que possibilita acessá-las de forma sincronizada a partir de diferentes dispositivos.',
-    comentario: 'Correto. O IMAP mantém as mensagens e as pastas no servidor, sincronizando o estado (lida, movida etc.) entre dispositivos. O POP3, em geral, baixa as mensagens para o dispositivo.'
+    id: 'INF-013', disciplina: 'Informática', tema: 'Navegadores e E-mail', gabarito: 'E',
+    enunciado: 'O protocolo IMAP, por padrão, remove as mensagens do servidor após transferi-las para o dispositivo do usuário, o que impede o acesso sincronizado a partir de outros dispositivos.',
+    comentario: 'Errado. Esse comportamento é típico do POP3. O IMAP mantém as mensagens e as pastas no servidor e sincroniza o estado entre os dispositivos.'
   },
   {
     id: 'INF-014', disciplina: 'Informática', tema: 'Navegadores e E-mail', gabarito: 'C',
@@ -88,9 +88,9 @@ window.QUESTOES = (window.QUESTOES || []).concat([
     comentario: 'Correto. Cookies guardam dados como login de sessão, carrinho de compras e preferências. Também podem ser usados para rastreamento.'
   },
   {
-    id: 'INF-015', disciplina: 'Informática', tema: 'Navegadores e E-mail', gabarito: 'C',
-    enunciado: 'No Google Chrome, a combinação de teclas Ctrl + Shift + N abre uma nova janela de navegação anônima.',
-    comentario: 'Correto. No Chrome (e no Edge), Ctrl + Shift + N abre a janela anônima/InPrivate. No Firefox, a janela privativa é aberta com Ctrl + Shift + P.'
+    id: 'INF-015', disciplina: 'Informática', tema: 'Navegadores e E-mail', gabarito: 'E',
+    enunciado: 'No Mozilla Firefox, a combinação de teclas Ctrl + Shift + N abre uma nova janela de navegação privativa.',
+    comentario: 'Errado. No Firefox, a janela privativa abre com Ctrl + Shift + P. Ctrl + Shift + N é o atalho da janela anônima no Chrome e da InPrivate no Edge.'
   },
   {
     id: 'INF-016', disciplina: 'Informática', tema: 'Navegadores e E-mail', gabarito: 'E',
@@ -140,9 +140,9 @@ window.QUESTOES = (window.QUESTOES || []).concat([
     comentario: 'Errado. O diferencial não desmarca o atributo de arquivamento. Por isso, cada diferencial acumula tudo o que mudou desde o último completo. Quem desmarca o atributo são o backup completo e o incremental.'
   },
   {
-    id: 'INF-025', disciplina: 'Informática', tema: 'Segurança da Informação', gabarito: 'C',
-    enunciado: 'Keylogger é um tipo de spyware capaz de capturar e armazenar as teclas digitadas pelo usuário no teclado do computador.',
-    comentario: 'Correto. O keylogger é um spyware que registra o que é digitado. Há também o screenlogger, que captura a tela ou a região clicada.'
+    id: 'INF-025', disciplina: 'Informática', tema: 'Segurança da Informação', gabarito: 'E',
+    enunciado: 'Screenlogger é o tipo de spyware que se limita a capturar e armazenar as teclas digitadas pelo usuário no teclado físico do computador.',
+    comentario: 'Errado. Capturar teclas digitadas é função do keylogger. O screenlogger captura imagens da tela ou a região em que o mouse é clicado, técnica usada contra teclados virtuais.'
   },
   {
     id: 'INF-026', disciplina: 'Informática', tema: 'Segurança da Informação', gabarito: 'C',
@@ -162,9 +162,9 @@ window.QUESTOES = (window.QUESTOES || []).concat([
 
   // ---------------- Sistemas Operacionais ----------------
   {
-    id: 'INF-029', disciplina: 'Informática', tema: 'Sistemas Operacionais', gabarito: 'C',
-    enunciado: 'No Windows 10, o atalho de teclado formado pela tecla do logotipo do Windows e a tecla L bloqueia a sessão do usuário.',
-    comentario: 'Correto. Win + L bloqueia o computador. Outros atalhos frequentes: Win + E (Explorador de Arquivos), Win + D (mostrar área de trabalho).'
+    id: 'INF-029', disciplina: 'Informática', tema: 'Sistemas Operacionais', gabarito: 'E',
+    enunciado: 'No Windows 10, o atalho de teclado formado pela tecla do logotipo do Windows e a tecla D bloqueia a sessão do usuário.',
+    comentario: 'Errado. Win + D mostra ou oculta a área de trabalho. Quem bloqueia a sessão é Win + L. Outros atalhos: Win + E abre o Explorador de Arquivos e Win + R abre o Executar.'
   },
   {
     id: 'INF-030', disciplina: 'Informática', tema: 'Sistemas Operacionais', gabarito: 'E',
@@ -204,14 +204,14 @@ window.QUESTOES = (window.QUESTOES || []).concat([
     comentario: 'Correto. $A$1 é referência absoluta e não muda. B1 é relativa e, ao descer uma linha, passa a B2.'
   },
   {
-    id: 'INF-037', disciplina: 'Informática', tema: 'Editores e Planilhas', gabarito: 'C',
-    enunciado: 'No Excel, a fórmula =SE(A1>=7;"Aprovado";"Reprovado") retorna Aprovado quando o valor de A1 for exatamente igual a 7.',
-    comentario: 'Correto. O operador >= inclui a igualdade, então 7 satisfaz a condição.'
+    id: 'INF-037', disciplina: 'Informática', tema: 'Editores e Planilhas', gabarito: 'E',
+    enunciado: 'No Excel, a fórmula =SE(A1>7;"Aprovado";"Reprovado") retorna Aprovado quando o valor de A1 for exatamente igual a 7.',
+    comentario: 'Errado. O operador > é estrito: com A1 = 7, a condição é falsa e o resultado é Reprovado. Para incluir o 7 seria necessário usar >=.'
   },
   {
-    id: 'INF-038', disciplina: 'Informática', tema: 'Editores e Planilhas', gabarito: 'C',
-    enunciado: 'No Microsoft Word em português, o atalho Ctrl + N aplica a formatação negrito ao texto selecionado.',
-    comentario: 'Correto. Na versão em português: Ctrl + N (negrito), Ctrl + I (itálico), Ctrl + S (sublinhado). Na versão em inglês, os atalhos são Ctrl + B, I e U.'
+    id: 'INF-038', disciplina: 'Informática', tema: 'Editores e Planilhas', gabarito: 'E',
+    enunciado: 'No Microsoft Word em português, o atalho Ctrl + I aplica a formatação negrito ao texto selecionado.',
+    comentario: 'Errado. Na versão em português, Ctrl + I aplica itálico; o negrito é Ctrl + N e o sublinhado, Ctrl + S. Na versão em inglês os atalhos são Ctrl + B, I e U.'
   },
   {
     id: 'INF-039', disciplina: 'Informática', tema: 'Editores e Planilhas', gabarito: 'C',

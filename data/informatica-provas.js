@@ -36,9 +36,9 @@ window.QUESTOES = (window.QUESTOES || []).concat([
     comentario: 'Errado. O hífen/menos EXCLUI dos resultados as páginas que contêm o termo (ex.: multa -estacionamento).'
   },
   {
-    id: 'PRV-005', disciplina: 'Informática', tema: 'Navegadores e E-mail', fonte: 'PRF 2021', ref: 'item 35 (variação)', gabarito: 'C',
-    enunciado: 'A pesquisa site:gov.br "relatório anual" no Google retorna páginas do domínio gov.br que contenham exatamente a expressão relatório anual.',
-    comentario: 'Correto. O operador site: restringe a busca ao domínio indicado, e as aspas exigem a expressão exata.'
+    id: 'PRV-005', disciplina: 'Informática', tema: 'Navegadores e E-mail', fonte: 'PRF 2021', ref: 'item 35 (variação)', gabarito: 'E',
+    enunciado: 'A pesquisa site:gov.br "relatório anual" no Google retorna páginas de quaisquer domínios que mencionem o texto gov.br, contenham elas ou não a expressão relatório anual.',
+    comentario: 'Errado. O operador site: restringe a busca a páginas do domínio indicado, e as aspas exigem a expressão exata. O resultado são páginas de gov.br que contenham exatamente relatório anual.'
   },
   {
     id: 'PRV-006', disciplina: 'Informática', tema: 'Nuvem, Dados e IA', fonte: 'PRF 2021', ref: 'item 36', gabarito: 'C',
@@ -63,19 +63,19 @@ window.QUESTOES = (window.QUESTOES || []).concat([
 
   // ======================= PC-PE 2024 (assuntos) =======================
   {
-    id: 'PRV-010', disciplina: 'Informática', tema: 'Editores e Planilhas', fonte: 'PC-PE 2024', ref: 'assunto: apresentações', gabarito: 'C',
-    enunciado: 'No Microsoft PowerPoint, a tecla F5 inicia a apresentação a partir do primeiro slide, e a combinação Shift + F5 inicia a apresentação a partir do slide atual.',
-    comentario: 'Correto. Esses são os atalhos padrão do PowerPoint. No LibreOffice Impress, F5 também inicia a apresentação do primeiro slide.'
+    id: 'PRV-010', disciplina: 'Informática', tema: 'Editores e Planilhas', fonte: 'PC-PE 2024', ref: 'assunto: apresentações', gabarito: 'E',
+    enunciado: 'No Microsoft PowerPoint, a tecla F5 inicia a apresentação a partir do slide atual, e a combinação Shift + F5 inicia a apresentação a partir do primeiro slide.',
+    comentario: 'Errado. Os atalhos estão invertidos: F5 começa no primeiro slide e Shift + F5 começa no slide atual.'
   },
   {
-    id: 'PRV-011', disciplina: 'Informática', tema: 'Sistemas Operacionais', fonte: 'PC-PE 2024', ref: 'assunto: Windows Explorer', gabarito: 'C',
-    enunciado: 'No Explorador de Arquivos do Windows 10, a combinação de teclas Ctrl + Shift + N cria uma nova pasta no local que está sendo exibido.',
-    comentario: 'Correto. Outros atalhos úteis: F2 renomeia, Alt + Enter abre as Propriedades e Ctrl + E (ou Ctrl + F) leva à caixa de pesquisa.'
+    id: 'PRV-011', disciplina: 'Informática', tema: 'Sistemas Operacionais', fonte: 'PC-PE 2024', ref: 'assunto: Windows Explorer', gabarito: 'E',
+    enunciado: 'No Explorador de Arquivos do Windows 10, a combinação de teclas Ctrl + N cria uma nova pasta no local que está sendo exibido.',
+    comentario: 'Errado. No Explorador de Arquivos, Ctrl + N abre uma nova janela. Para criar uma nova pasta usa-se Ctrl + Shift + N.'
   },
   {
-    id: 'PRV-012', disciplina: 'Informática', tema: 'Editores e Planilhas', fonte: 'PC-PE 2024', ref: 'assunto: planilhas', gabarito: 'C',
-    enunciado: 'No Excel, a função CONT.SE retorna a quantidade de células de um intervalo que atendem a um critério, como em =CONT.SE(B2:B50;">100").',
-    comentario: 'Correto. CONT.SE conta células por critério. Não confundir com SOMASE, que soma os valores que atendem ao critério, nem com CONT.VALORES, que conta as células não vazias.'
+    id: 'PRV-012', disciplina: 'Informática', tema: 'Editores e Planilhas', fonte: 'PC-PE 2024', ref: 'assunto: planilhas', gabarito: 'E',
+    enunciado: 'No Excel, a função CONT.SE soma os valores das células de um intervalo que atendem a um critério, como em =CONT.SE(B2:B50;">100").',
+    comentario: 'Errado. CONT.SE CONTA as células que atendem ao critério. Para somar os valores usa-se SOMASE, e para contar células não vazias, CONT.VALORES.'
   },
   {
     id: 'PRV-013', disciplina: 'Informática', tema: 'Editores e Planilhas', fonte: 'PC-PE 2024', ref: 'assunto: edição de textos', gabarito: 'C',
@@ -130,9 +130,9 @@ window.QUESTOES = (window.QUESTOES || []).concat([
     comentario: 'Correto. O item da PF 2025 afirmou que a nuvem dispensa conexão com a Internet porque os dados ficariam armazenados localmente, o que está errado. As características essenciais (NIST) são autoatendimento sob demanda, amplo acesso pela rede, pool de recursos, elasticidade rápida e serviço medido.'
   },
   {
-    id: 'PRV-023', disciplina: 'Informática', tema: 'Nuvem, Dados e IA', fonte: 'PF 2025', ref: 'item 67 (variação)', gabarito: 'C',
-    enunciado: 'A elasticidade da computação em nuvem permite aumentar ou reduzir os recursos contratados conforme a demanda, e a cobrança costuma ser proporcional ao uso.',
-    comentario: 'Correto. Elasticidade e serviço medido (pay-per-use) estão entre as vantagens mais cobradas da nuvem.'
+    id: 'PRV-023', disciplina: 'Informática', tema: 'Nuvem, Dados e IA', fonte: 'PF 2025', ref: 'item 67 (variação)', gabarito: 'E',
+    enunciado: 'A elasticidade da computação em nuvem permite ampliar os recursos contratados em momentos de pico, mas não permite reduzi-los, de modo que a cobrança se mantém no maior patamar já utilizado.',
+    comentario: 'Errado. A elasticidade funciona nos dois sentidos: os recursos aumentam ou diminuem conforme a demanda. Somada ao serviço medido, permite que a cobrança acompanhe o uso real.'
   },
   {
     id: 'PRV-024', disciplina: 'Informática', tema: 'Sistemas de Informação', fonte: 'PF 2025', ref: 'item 68', gabarito: 'C',
@@ -160,9 +160,9 @@ window.QUESTOES = (window.QUESTOES || []).concat([
     comentario: 'Correto. A 2FN exige, além disso, ausência de dependência parcial da chave; a 3FN exige ausência de dependência transitiva.'
   },
   {
-    id: 'PRV-029', disciplina: 'Informática', tema: 'Nuvem, Dados e IA', fonte: 'PF 2025', ref: 'item 73', gabarito: 'C',
-    enunciado: 'Em Python, a palavra-chave lambda cria funções anônimas de uma única expressão, que podem ser passadas como argumento para funções como map, filter e sorted.',
-    comentario: 'Correto. Exemplo: sorted(lista, key=lambda x: x[1]). Funções que recebem outras funções como argumento são chamadas de funções de ordem superior.'
+    id: 'PRV-029', disciplina: 'Informática', tema: 'Nuvem, Dados e IA', fonte: 'PF 2025', ref: 'item 73', gabarito: 'E',
+    enunciado: 'Em Python, funções criadas com a palavra-chave lambda podem conter múltiplas instruções, como laços for e blocos try/except, desde que escritas em uma única linha.',
+    comentario: 'Errado. A lambda aceita apenas UMA expressão e não pode conter instruções como for, while, try ou return. Para lógica mais complexa usa-se def.'
   },
   {
     id: 'PRV-030', disciplina: 'Informática', tema: 'Nuvem, Dados e IA', fonte: 'PF 2025', ref: 'item 74', gabarito: 'E',
@@ -195,9 +195,9 @@ window.QUESTOES = (window.QUESTOES || []).concat([
     comentario: 'Correto. 6 = rw- (4+2), 4 = r-- e 0 = ---. O item da PF 2025 cobrou chmod 755 (rwxr-xr-x).'
   },
   {
-    id: 'PRV-036', disciplina: 'Informática', tema: 'Redes e Internet', fonte: 'PF 2025', ref: 'item 80', gabarito: 'C',
-    enunciado: 'O DNS utiliza predominantemente o protocolo UDP, na porta 53, para as consultas de resolução de nomes, mas pode recorrer ao TCP, por exemplo, em transferências de zona entre servidores.',
-    comentario: 'Correto. O TCP também é usado quando a resposta excede o tamanho suportado em UDP.'
+    id: 'PRV-036', disciplina: 'Informática', tema: 'Redes e Internet', fonte: 'PF 2025', ref: 'item 80', gabarito: 'E',
+    enunciado: 'O DNS utiliza exclusivamente o protocolo TCP, na porta 80, para realizar as consultas de resolução de nomes.',
+    comentario: 'Errado. O DNS usa a porta 53, predominantemente sobre UDP nas consultas, e recorre ao TCP em casos como transferências de zona. A porta 80 é do HTTP.'
   },
   {
     id: 'PRV-037', disciplina: 'Informática', tema: 'Nuvem, Dados e IA', fonte: 'PF 2025', ref: 'item 81', gabarito: 'E',
@@ -240,9 +240,9 @@ window.QUESTOES = (window.QUESTOES || []).concat([
     comentario: 'Correto. O item da PF 2025 falou em partir de um estado inconsistente, o que está errado. ACID significa Atomicidade, Consistência, Isolamento e Durabilidade.'
   },
   {
-    id: 'PRV-045', disciplina: 'Informática', tema: 'Bancos de Dados', fonte: 'PF 2025', ref: 'item 90', gabarito: 'C',
-    enunciado: 'Pela propriedade de atomicidade, se uma das operações de uma transação falhar, as operações já executadas por ela devem ser desfeitas, de forma que a transação ocorra por inteiro ou não ocorra.',
-    comentario: 'Correto. É o princípio do "tudo ou nada": COMMIT confirma a transação e ROLLBACK a desfaz.'
+    id: 'PRV-045', disciplina: 'Informática', tema: 'Bancos de Dados', fonte: 'PF 2025', ref: 'item 90', gabarito: 'E',
+    enunciado: 'Pela propriedade de durabilidade, se uma das operações de uma transação falhar, as operações já executadas por ela devem ser desfeitas, de forma que a transação ocorra por inteiro ou não ocorra.',
+    comentario: 'Errado. O princípio do "tudo ou nada" é a ATOMICIDADE. A durabilidade garante que, depois do COMMIT, as alterações persistam mesmo após falhas do sistema.'
   },
   {
     id: 'PRV-046', disciplina: 'Informática', tema: 'Bancos de Dados', fonte: 'PF 2025', ref: 'itens 91–92', gabarito: 'C',

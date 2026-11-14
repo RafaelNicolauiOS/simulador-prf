@@ -132,8 +132,9 @@ select {
 .q-tags { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-size: .8rem; }
 .tag { background: var(--accent-soft); color: var(--accent); padding: 3px 10px; border-radius: 999px; font-weight: 600; }
 .q-text { font-size: 1.08rem; margin: 0 0 22px; }
-.answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.answers { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
 .btn-answer {
+  min-width: 0; width: 100%;
   font: inherit; font-weight: 600; cursor: pointer; padding: 14px; border-radius: 12px;
   border: 1.5px solid var(--line); background: var(--surface); color: var(--text);
   display: flex; align-items: center; justify-content: center; gap: 10px; transition: .15s;

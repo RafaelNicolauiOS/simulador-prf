@@ -210,5 +210,6 @@ select {
 @media (max-width: 480px) {
   .row, .seg { grid-template-columns: 1fr; }
   .question { padding: 18px; }
+  .btn-answer { padding: 12px 6px; gap: 6px; }
   .quiz-nav .btn { padding: 9px 12px; }
 }

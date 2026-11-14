@@ -1,14 +1,16 @@
 # Simulador PRF — Certo ou Errado
 
 Simulador de questões no estilo **CEBRASPE** (julgamento de itens Certo/Errado) para o concurso da **PRF**.
+
+Disciplinas: **Informática** (115 itens) e **Direitos Humanos** (67 itens).
 Página estática: HTML, CSS e JavaScript puros, sem build.
 
 ## Recursos
 - **Modo Treino**: gabarito e comentário logo após cada item.
 - **Modo Simulado**: cronômetro, folha de respostas, opção de deixar em branco e correção ao final.
 - **Nota líquida CEBRASPE**: acertos − erros (em branco não pontua).
-- Filtros por assunto, por **origem** (PRF 2021, PC-PE 2024, PF 2025, FUB 2025, SEPLAG-AL 2026 ou banco geral), por itens não respondidos e por itens que você errou.
-- Página **Relação de matérias** (`relacao.html`): edital de Informática da PRF × incidência nas provas CEBRASPE recentes.
+- Filtros por assunto, por **origem** (PRF 2021, PC-PE 2024, PF 2025, FUB 2025, SEPLAG-AL 2026, Câmara 2026 ou banco geral), por itens não respondidos e por itens que você errou.
+- Página **Relação de matérias** (`relacao.html`): edital de Informática e de Direitos Humanos da PRF × incidência nas provas CEBRASPE recentes.
 - Desempenho por assunto, revisão comentada e “Refazer erradas”.
 - Atalhos: `C` = Certo, `E` = Errado, `→`/`Enter` = próxima, `←` = anterior.
 - Progresso salvo no navegador (localStorage).

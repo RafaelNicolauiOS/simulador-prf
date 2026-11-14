@@ -240,3 +240,8 @@ td.c { text-align: center; white-space: nowrap; }
 .cards-3 .card p { margin: 0; font-size: .9rem; color: var(--muted); }
 .fontes { font-size: .85rem; color: var(--muted); padding-left: 18px; }
 .fontes a { color: var(--accent); word-break: break-word; }
+.subnav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.subnav a { font-size: .85rem; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); text-decoration: none; background: var(--surface); }
+.subnav a:hover { color: var(--accent); border-color: var(--accent); }
+.sec-title { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--line); }
+.doc h1, .doc h2 { scroll-margin-top: 16px; }

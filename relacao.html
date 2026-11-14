@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Relação de Matérias PRF</title>
-  <meta name="description" content="Relação entre o edital de Informática da PRF e o que a CEBRASPE cobrou em provas de nível superior de 2021 a 2026.">
+  <meta name="description" content="Relação entre o edital de Informática e Direitos Humanos da PRF e o que a CEBRASPE cobrou em provas de nível superior de 2021 a 2026.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=3">
+  <link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body>
   <header class="topbar">
@@ -22,7 +22,8 @@
   </header>
 
   <main class="wrap doc">
-    <h1>Informática: edital PRF × provas recentes da CEBRASPE</h1>
+    <nav class="subnav"><a href="#informatica">Informática</a><a href="#direitos-humanos">Direitos Humanos</a><a href="#disciplinas">Disciplinas PRF</a></nav>
+    <h1 id="informatica">Informática: edital PRF × provas recentes da CEBRASPE</h1>
     <p class="lead">Comparação entre o conteúdo de Informática do último edital da PRF (2021) e o que a banca cobrou em provas de nível superior entre 2024 e 2026, com a PRF 2021 como referência. Os números nas células são os itens de cada prova sobre o tópico.</p>
 
     <h2>Provas analisadas</h2>
@@ -80,7 +81,60 @@
       <div class="card"><h3>Pegadinhas recorrentes</h3><p>A banca troca conceitos (ipconfig × ifconfig, estruturado × não estruturado, frontend × backend, IaaS × PaaS), altera números (IPv6 com 256 bits) e usa termos absolutos ("exclusivamente", "não há", "nunca").</p></div>
     </div>
 
-    <h2>Disciplinas do último edital PRF (2021)</h2>
+
+    <h1 id="direitos-humanos" class="sec-title">Direitos Humanos: edital PRF × provas recentes da CEBRASPE</h1>
+    <p class="lead">O edital PRF 2021 cobra três tópicos: DH na Constituição (com os tratados), a DUDH e a Convenção Americana. As provas de 2024 a 2026 foram além desses tópicos, principalmente com o sistema interamericano, o tratamento de presos e o uso da força.</p>
+
+    <h2>Provas analisadas</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Prova</th><th>Cargo / nível</th><th>Formato</th><th>Itens de DH</th><th>No simulador</th></tr></thead>
+        <tbody>
+          <tr><td><b>PRF 2021</b></td><td>Policial Rodoviário Federal · superior</td><td>Certo/Errado</td><td>6 (itens 115–120)</td><td>6</td></tr>
+          <tr><td><b>PC-PE 2024</b></td><td>Delegado de Polícia</td><td>Múltipla escolha</td><td>CADH (só assuntos aproveitados)</td><td>4</td></tr>
+          <tr><td><b>PF 2025</b></td><td>Agente, Escrivão e Papiloscopista · superior</td><td>Certo/Errado</td><td>6 (itens 29–34)</td><td>6</td></tr>
+          <tr><td><b>Câmara 2026</b></td><td>Policial Legislativo Federal · superior</td><td>Certo/Errado</td><td>20 (itens 141–160)</td><td>19</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Matriz: tópicos do edital PRF × incidência</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tópico</th><th>PRF 21</th><th>PC-PE 24</th><th>PF 25</th><th>Câmara 26</th><th>Prioridade</th></tr></thead>
+        <tbody>
+          <tr><td>1 Direitos humanos na CF (garantias e jurisprudência do STF)</td><td class="c"><span class="hit">116–118</span></td><td class="c miss">—</td><td class="c miss">—</td><td class="c"><span class="hit">145</span></td><td>Alta</td></tr>
+          <tr><td>1.1 CF e tratados internacionais (art. 5º, §§ 2º a 4º; hierarquia)</td><td class="c"><span class="hit">120</span></td><td class="c miss">—</td><td class="c miss">—</td><td class="c"><span class="hit">141, 142</span></td><td><b>Muito alta</b></td></tr>
+          <tr><td>2 Declaração Universal dos Direitos Humanos</td><td class="c"><span class="hit">119</span></td><td class="c miss">—</td><td class="c miss">—</td><td class="c"><span class="hit">152–155</span></td><td><b>Muito alta</b></td></tr>
+          <tr><td>3 Convenção Americana (Pacto de São José)</td><td class="c miss">—</td><td class="c"><span class="hit">✓</span></td><td class="c"><span class="hit">30</span></td><td class="c"><span class="hit">144, 146, 147</span></td><td><b>Muito alta</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Cobrados pela banca, mas fora do edital PRF 2021</h2>
+    <p class="lead">Quase todos estes tópicos estão no edital da PF 2025, que é bem mais extenso em DH. O uso da força tem relação direta com a atividade da PRF.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tópico</th><th>PRF 21</th><th>PF 25</th><th>Câmara 26</th></tr></thead>
+        <tbody>
+          <tr><td>Sistema Interamericano: Comissão × Corte, petições, sentença, competência contenciosa <span class="badge-novo">NOVO</span></td><td class="c miss">—</td><td class="c miss">—</td><td class="c"><span class="hit">148–151</span></td></tr>
+          <tr><td>Tortura: Lei nº 9.455/1997 e Convenção da ONU contra a Tortura <span class="badge-novo">NOVO</span></td><td class="c"><span class="hit">115</span></td><td class="c"><span class="hit">33</span></td><td class="c miss">—</td></tr>
+          <tr><td>Regras de Mandela (tratamento de presos) <span class="badge-novo">NOVO</span></td><td class="c miss">—</td><td class="c"><span class="hit">29, 31, 32</span></td><td class="c miss">—</td></tr>
+          <tr><td>Estatuto dos Refugiados (expulsão, non-refoulement) <span class="badge-novo">NOVO</span></td><td class="c miss">—</td><td class="c"><span class="hit">34</span></td><td class="c miss">—</td></tr>
+          <tr><td>Uso da força: Código de Conduta da ONU, Princípios Básicos, Portaria nº 4.226/2010 <span class="badge-novo">NOVO</span></td><td class="c miss">—</td><td class="c miss">—</td><td class="c"><span class="hit">156–160</span></td></tr>
+          <tr><td>Teoria geral: gerações/dimensões, direitos humanos × fundamentais <span class="badge-novo">NOVO</span></td><td class="c miss">—</td><td class="c miss">—</td><td class="c"><span class="hit">143, 145</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>O que isso indica</h2>
+    <div class="cards-3">
+      <div class="card"><h3>Hierarquia dos tratados</h3><p>É o tema mais repetido: tratados aprovados com 3/5 em dois turnos equivalem a emenda constitucional, os demais tratados de DH são supralegais, e nenhum é supraconstitucional.</p></div>
+      <div class="card"><h3>DUDH e CADH na letra</h3><p>A banca cobra o texto dos artigos: DUDH como soft law de 1948, exceção do asilo, pena de morte restrita, prisão civil só por alimentos, núcleo inderrogável e sentença da Corte inapelável.</p></div>
+      <div class="card"><h3>Pegadinhas recorrentes</h3><p>A banca inverte Comissão e Corte, troca a ordem cronológica (DUDH × 2ª Guerra), diz que a proteção é "em qualquer circunstância" quando há exceções e transforma restrição em vedação absoluta.</p></div>
+    </div>
+
+    <h2 id="disciplinas" class="sec-title-sm">Disciplinas do último edital PRF (2021)</h2>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Bloco</th><th>Disciplinas</th></tr></thead>
@@ -93,7 +147,7 @@
     </div>
 
     <h2>Sobre os itens do simulador</h2>
-    <p>Os itens marcados com o nome de uma prova foram <b>adaptados com redação própria</b>: cobram o mesmo assunto e a mesma pegadinha do item oficial, mas não reproduzem seu texto. O número do item original aparece na etiqueta da questão, para consulta à prova oficial. Os itens da PC-PE 2024, cuja prova é de múltipla escolha, aproveitam apenas os assuntos cobrados.</p>
+    <p>Os itens marcados com o nome de uma prova foram <b>adaptados com redação própria</b>: cobram o mesmo assunto e a mesma pegadinha do item oficial, mas não reproduzem seu texto. O número do item original aparece na etiqueta da questão, para consulta à prova oficial. Os itens da PC-PE 2024 (Escrivão e Delegado), provas de múltipla escolha, aproveitam apenas os assuntos cobrados.</p>
 
     <h2>Fontes</h2>
     <ul class="fontes">
@@ -104,6 +158,8 @@
       <li><a href="https://arquivos.qconcursos.com/prova/arquivo_prova/133647/cespe-cebraspe-2025-fub-auditor-prova.pdf" target="_blank" rel="noopener">Prova FUB 2025 – Auditor</a></li>
       <li><a href="https://arquivos.qconcursos.com/prova/arquivo_prova/161140/cespe-cebraspe-2026-seplag-al-analista-previdenciario-area-administrativa-prova.pdf" target="_blank" rel="noopener">Prova SEPLAG-AL 2026 – Analista Previdenciário</a></li>
       <li><a href="https://www.qconcursos.com/questoes-de-concursos/provas/cespe-cebraspe-2024-pc-pe-escrivao-de-policia" target="_blank" rel="noopener">PC-PE 2024 – Escrivão (assuntos de Informática)</a></li>
+      <li><a href="https://arquivos.qconcursos.com/prova/arquivo_prova/105278/cespe-cebraspe-2024-pc-pe-delegado-de-policia-prova.pdf" target="_blank" rel="noopener">PC-PE 2024 – Delegado (assuntos de Direitos Humanos)</a></li>
+      <li><a href="https://arquivos.qconcursos.com/prova/arquivo_prova/150430/cespe-cebraspe-2026-camara-dos-deputados-tecnico-legislativo-especialidade-policial-legislativo-federal-prova.pdf" target="_blank" rel="noopener">Câmara dos Deputados 2026 – Policial Legislativo Federal</a></li>
     </ul>
   </main>
 

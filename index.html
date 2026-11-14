@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulador PRF · Certo ou Errado</title>
+  <meta name="description" content="Simulador de questões Certo/Errado no estilo CEBRASPE para o concurso da PRF.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#" id="brand">
+        <span class="brand-mark">PRF</span>
+        <span class="brand-text">Simulador <small>Certo ou Errado · estilo CEBRASPE</small></span>
+      </a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- INÍCIO -->
+    <section id="view-home" class="view">
+      <div class="hero">
+        <h1>Treine para a PRF no formato da banca</h1>
+        <p>Julgue cada item como <b>Certo</b> ou <b>Errado</b>. Na correção CEBRASPE, cada erro anula um acerto — deixar em branco não pontua nem desconta.</p>
+      </div>
+
+      <div class="grid-2">
+        <form id="setup" class="card">
+          <h2>Montar sessão</h2>
+
+          <label class="field">
+            <span>Disciplina</span>
+            <select id="disciplina"></select>
+          </label>
+
+          <div class="field">
+            <span>Assuntos</span>
+            <div id="temas" class="chips"></div>
+          </div>
+
+          <div class="row">
+            <label class="field">
+              <span>Quantidade</span>
+              <select id="quantidade">
+                <option value="10">10 itens</option>
+                <option value="20" selected>20 itens</option>
+                <option value="30">30 itens</option>
+                <option value="0">Todos</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Filtrar</span>
+              <select id="filtro">
+                <option value="todas">Todas</option>
+                <option value="ineditas">Não respondidas</option>
+                <option value="erradas">Que errei</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="field">
+            <span>Modo</span>
+            <div class="seg">
+              <label><input type="radio" name="modo" value="treino" checked><span><b>Treino</b><small>Gabarito e comentário a cada item</small></span></label>
+              <label><input type="radio" name="modo" value="simulado"><span><b>Simulado</b><small>Cronômetro e correção só no final</small></span></label>
+            </div>
+          </div>
+
+          <p id="setup-info" class="muted"></p>
+          <button type="submit" class="btn btn-primary btn-block">Começar</button>
+        </form>
+
+        <aside class="card">
+          <h2>Seu desempenho</h2>
+          <div id="stats"></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- QUESTÃO -->
+    <section id="view-quiz" class="view" hidden>
+      <div class="quiz-head">
+        <button class="btn btn-ghost" id="sair" type="button">← Sair</button>
+        <div class="quiz-meta">
+          <span id="contador"></span>
+          <span id="timer" class="timer" hidden></span>
+        </div>
+      </div>
+      <div class="progress"><div id="progress-bar"></div></div>
+
+      <article class="card question">
+        <div class="q-tags"><span id="q-tema" class="tag"></span><span id="q-id" class="muted"></span></div>
+        <p id="q-texto" class="q-text"></p>
+
+        <div class="answers">
+          <button class="btn-answer certo" data-resp="C" type="button"><kbd>C</kbd> Certo</button>
+          <button class="btn-answer errado" data-resp="E" type="button"><kbd>E</kbd> Errado</button>
+        </div>
+
+        <div id="feedback" class="feedback" hidden></div>
+      </article>
+
+      <div class="quiz-nav">
+        <button class="btn" id="anterior" type="button">Anterior</button>
+        <button class="btn btn-ghost" id="branco" type="button" hidden>Deixar em branco</button>
+        <button class="btn btn-primary" id="proxima" type="button">Próxima</button>
+      </div>
+
+      <div id="mapa-wrap" class="card mapa-wrap" hidden>
+        <div class="mapa-head">
+          <h3>Folha de respostas</h3>
+          <button class="btn btn-primary" id="finalizar" type="button">Finalizar simulado</button>
+        </div>
+        <div id="mapa" class="mapa"></div>
+      </div>
+    </section>
+
+    <!-- RESULTADO -->
+    <section id="view-result" class="view" hidden>
+      <div class="card result">
+        <h2>Resultado</h2>
+        <div class="score">
+          <div class="score-main"><span id="r-liquida"></span><small>nota líquida</small></div>
+          <div class="score-items">
+            <div><b id="r-certas"></b><small>acertos</small></div>
+            <div><b id="r-erradas"></b><small>erros</small></div>
+            <div><b id="r-brancos"></b><small>em branco</small></div>
+            <div><b id="r-tempo"></b><small>tempo</small></div>
+          </div>
+        </div>
+        <p id="r-msg" class="muted"></p>
+        <div id="r-temas" class="temas-bars"></div>
+        <div class="result-actions">
+          <button class="btn" id="refazer-erradas" type="button">Refazer erradas</button>
+          <button class="btn btn-primary" id="nova" type="button">Nova sessão</button>
+        </div>
+      </div>
+
+      <h3 class="section-title">Revisão dos itens</h3>
+      <div id="revisao" class="revisao"></div>
+    </section>
+  </main>
+
+  <footer class="wrap footer">
+    Questões inéditas elaboradas no estilo CEBRASPE para estudo. Não são itens oficiais de provas anteriores.
+  </footer>
+
+  <script src="data/informatica.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -128,7 +128,7 @@
     if (db.hist.length) {
       html += '<h3>Últimas sessões</h3><ul class="hist">' + db.hist.slice(-5).reverse().map(function (h) {
         var d = new Date(h.d);
-        return '<li><span>' + d.toLocaleDateString('pt-BR') + ' · ' + (h.modo === 'simulado' ? 'Simulado' : 'Treino') + '</span>' +
+        return '<li><span>' + d.toLocaleDateString('pt-BR') + ' · ' + (h.modo === 'prova' ? 'Prova completa' : h.modo === 'simulado' ? 'Simulado' : 'Treino') + '</span>' +
           '<span><b>' + (h.c - h.e) + '</b> <span class="muted">líq. (' + h.c + '✓ ' + h.e + '✗ de ' + h.n + ')</span></span></li>';
       }).join('') + '</ul>';
       html += '<button type="button" class="link-btn" id="zerar">Zerar histórico</button>';
@@ -150,8 +150,62 @@
   boxTemas.addEventListener('change', atualizarInfo);
   $('#filtro').addEventListener('change', atualizarInfo);
 
+  /* ---------- Prova completa (Edital PRF nº 1/2021, item 9.12) ---------- */
+  var PROVA = [
+    { bloco: 'I', minimo: 15, itens: [['Língua Portuguesa', 13], ['Raciocínio Lógico-Matemático', 8], ['Informática', 7],
+      ['Física', 7], ['Ética e Cidadania', 7], ['Geopolítica', 7], ['LINGUA', 6]] },
+    { bloco: 'II', minimo: 10, itens: [['Legislação de Trânsito', 30]] },
+    { bloco: 'III', minimo: 10, itens: [['Direito Administrativo', 6], ['Direito Constitucional', 7], ['Direito Penal', 6],
+      ['Direito Processual Penal', 5], ['Legislação Especial', 6], ['Direitos Humanos', 5]] }
+  ];
+  var MINIMO_TOTAL = 50;
+  function modoAtual() { return document.querySelector('input[name=modo]:checked').value; }
+
+  function montarProva() {
+    var lingua = $('#lingua').value, lista = [];
+    PROVA.forEach(function (b) {
+      b.itens.forEach(function (par) {
+        var disc = par[0] === 'LINGUA' ? lingua : par[0];
+        var pool = BANCO.filter(function (q) { return q.disciplina === disc; });
+        // metade Certo, metade Errado (aprox.), para não favorecer chute
+        var cs = embaralhar(pool.filter(function (q) { return q.gabarito === 'C'; }));
+        var es = embaralhar(pool.filter(function (q) { return q.gabarito === 'E'; }));
+        var nC = Math.round(par[1] / 2 + (Math.random() < 0.5 ? -0.5 : 0.5) * (par[1] % 2));
+        var escolha = cs.slice(0, nC).concat(es.slice(0, par[1] - nC));
+        if (escolha.length < par[1]) escolha = escolha.concat(embaralhar(pool).filter(function (q) { return escolha.indexOf(q) < 0; }).slice(0, par[1] - escolha.length));
+        embaralhar(escolha).forEach(function (q) { lista.push({ q: q, bloco: b.bloco }); });
+      });
+    });
+    return lista;
+  }
+
+  function resumoProva() {
+    $('#prova-resumo').innerHTML = '<b>120 itens · nota = acertos − erros</b>' + PROVA.map(function (b) {
+      var n = b.itens.reduce(function (s, p) { return s + p[1]; }, 0);
+      return '<div style="margin-top:8px"><b>Bloco ' + b.bloco + '</b> (' + n + ' itens, mínimo ' + b.minimo + ' pontos): ' +
+        b.itens.map(function (p) { return (p[0] === 'LINGUA' ? 'Língua estrangeira' : p[0]) + ' ' + p[1]; }).join(' · ') + '</div>';
+    }).join('') + '<div style="margin-top:8px">Mínimo de ' + MINIMO_TOTAL + ' pontos no total. A divisão por disciplina é aproximada, baseada na prova de 2021; o edital fixa apenas o total de cada bloco.</div>';
+  }
+
+  function aplicarModo() {
+    var prova = modoAtual() === 'prova';
+    $('#filtros').hidden = prova;
+    $('#prova-opts').hidden = !prova;
+    if (prova) {
+      resumoProva();
+      $('#setup-info').textContent = 'Tempo oficial: 4h30 para a prova objetiva e a discursiva.';
+      $('#setup button[type=submit]').disabled = false;
+    } else atualizarInfo();
+  }
+  document.querySelectorAll('input[name=modo]').forEach(function (i) { i.addEventListener('change', aplicarModo); });
+
   $('#setup').addEventListener('submit', function (ev) {
     ev.preventDefault();
+    if (modoAtual() === 'prova') {
+      var itens = montarProva();
+      iniciar(itens.map(function (x) { return x.q; }), 'prova', itens.map(function (x) { return x.bloco; }));
+      return;
+    }
     var qtd = +$('#quantidade').value;
     var lista = embaralhar(filtrarBanco());
     if (qtd) lista = lista.slice(0, qtd);
@@ -161,14 +215,16 @@
   /* ---------- Sessão ---------- */
   var S = null, tick = null;
 
-  function iniciar(lista, modo) {
+  function iniciar(lista, modo, blocos) {
     if (!lista.length) return;
-    S = { lista: lista, modo: modo, i: 0, resp: {}, revelado: {}, inicio: Date.now(), fim: null };
-    $('#timer').hidden = modo !== 'simulado';
-    $('#mapa-wrap').hidden = modo !== 'simulado';
-    $('#branco').hidden = modo !== 'simulado';
+    S = { lista: lista, modo: modo, blocos: blocos || null, i: 0, resp: {}, revelado: {}, inicio: Date.now(), fim: null };
+    var sim = modo !== 'treino';
+    $('#timer').hidden = !sim;
+    $('#mapa-wrap').hidden = !sim;
+    $('#branco').hidden = !sim;
+    $('#finalizar').textContent = modo === 'prova' ? 'Finalizar prova' : 'Finalizar simulado';
     clearInterval(tick);
-    if (modo === 'simulado') {
+    if (sim) {
       tick = setInterval(function () { $('#timer').textContent = fmtTempo(Date.now() - S.inicio); }, 1000);
       $('#timer').textContent = '00:00';
     }
@@ -178,9 +234,9 @@
 
   function render() {
     var q = S.lista[S.i], n = S.lista.length, r = S.resp[q.id];
-    $('#contador').textContent = 'Item ' + (S.i + 1) + ' de ' + n;
+    $('#contador').textContent = 'Item ' + (S.i + 1) + ' de ' + n + (S.blocos ? ' · Bloco ' + S.blocos[S.i] : '');
     $('#progress-bar').style.width = ((S.i + 1) / n * 100) + '%';
-    $('#q-tema').textContent = q.tema;
+    $('#q-tema').textContent = S.modo === 'prova' ? q.disciplina : q.tema;
     $('#q-id').textContent = '#' + q.id;
     $('#q-fonte').textContent = q.fonte ? q.fonte + (q.ref ? ' · ' + q.ref : '') : (q.topico ? 'Edital PRF · item ' + q.topico.split(' ')[0] : '');
     $('#q-fonte').hidden = !q.fonte && !q.topico;
@@ -254,9 +310,9 @@
   }
 
   function finalizar() {
-    if (S.modo === 'simulado') {
+    if (S.modo !== 'treino') {
       var brancos = S.lista.filter(function (q) { return !S.resp[q.id]; }).length;
-      var msg = brancos ? 'Você deixou ' + brancos + ' item(ns) em branco. Finalizar mesmo assim?' : 'Finalizar e corrigir o simulado?';
+      var msg = brancos ? 'Você deixou ' + brancos + ' item(ns) em branco. Finalizar mesmo assim?' : (S.modo === 'prova' ? 'Finalizar e corrigir a prova?' : 'Finalizar e corrigir o simulado?');
       if (!confirm(msg)) return;
       S.lista.forEach(function (q) { if (S.resp[q.id]) registrar(q, S.resp[q.id]); });
     }
@@ -270,7 +326,8 @@
     var c = 0, e = 0, b = 0, porTema = {};
     S.lista.forEach(function (q) {
       var r = S.resp[q.id];
-      var t = porTema[q.tema] = porTema[q.tema] || { c: 0, n: 0 };
+      var chave = S.modo === 'prova' ? q.disciplina : q.tema;
+      var t = porTema[chave] = porTema[chave] || { c: 0, n: 0 };
       t.n++;
       if (!r) b++;
       else if (r === q.gabarito) { c++; t.c++; }
@@ -290,6 +347,8 @@
     $('#r-msg').textContent = 'Nota líquida = acertos − erros. Você aproveitou ' + pct + '% do total possível (' + n + ' pontos).' +
       (e > 0 && b === 0 && liq < n / 2 ? ' Dica: na CEBRASPE, deixar em branco itens de que você não tem segurança pode elevar a nota.' : '');
 
+    renderBlocos(liq);
+
     $('#r-temas').innerHTML = Object.keys(porTema).map(function (k) {
       var t = porTema[k], p = Math.round(t.c / t.n * 100);
       return '<div class="tbar"><div class="tbar-head"><span>' + esc(k) + '</span><span class="muted">' + t.c + '/' + t.n + '</span></div>' +
@@ -307,8 +366,33 @@
 
     var erradas = S.lista.filter(function (q) { return S.resp[q.id] && S.resp[q.id] !== q.gabarito; });
     $('#refazer-erradas').disabled = !erradas.length;
-    $('#refazer-erradas').onclick = function () { iniciar(embaralhar(erradas), S.modo); };
+    $('#refazer-erradas').onclick = function () { iniciar(embaralhar(erradas), S.modo === 'prova' ? 'simulado' : S.modo); };
     mostrar('result');
+  }
+
+  function renderBlocos(liq) {
+    var box = $('#r-blocos');
+    if (S.modo !== 'prova' || !S.blocos) { box.hidden = true; box.innerHTML = ''; return; }
+    var reprovado = [];
+    var html = PROVA.map(function (b) {
+      var c = 0, e = 0, n = 0;
+      S.lista.forEach(function (q, i) {
+        if (S.blocos[i] !== b.bloco) return;
+        n++;
+        var r = S.resp[q.id];
+        if (r) { if (r === q.gabarito) c++; else e++; }
+      });
+      var nota = c - e, ok = nota >= b.minimo;
+      if (!ok) reprovado.push('Bloco ' + b.bloco + ' abaixo de ' + b.minimo);
+      return '<div class="bloco ' + (ok ? 'ok' : 'bad') + '"><span><b>Bloco ' + b.bloco + '</b> · ' + c + ' acertos, ' + e + ' erros, ' +
+        (n - c - e) + ' em branco</span><span><b>' + nota + '</b> / mín. ' + b.minimo + '</span><span class="st">' + (ok ? 'OK' : 'ABAIXO') + '</span></div>';
+    }).join('');
+    if (liq < MINIMO_TOTAL) reprovado.push('total abaixo de ' + MINIMO_TOTAL);
+    html += '<div class="veredito ' + (reprovado.length ? 'bad' : 'ok') + '">' + (reprovado.length
+      ? 'Pelos critérios do edital, você seria eliminado na prova objetiva: ' + reprovado.join('; ') + '.'
+      : 'Pelos critérios do edital, você passaria na prova objetiva (nota total ' + liq + ' de 120).') + '</div>';
+    box.innerHTML = '<div class="blocos">' + html + '</div>';
+    box.hidden = false;
   }
 
   /* ---------- Eventos ---------- */
@@ -325,7 +409,7 @@
   });
   function voltarInicio() {
     clearInterval(tick); S = null;
-    montarStats(); atualizarInfo(); mostrar('home');
+    montarStats(); aplicarModo(); mostrar('home');
   }
   $('#sair').addEventListener('click', function () {
     if (confirm('Sair da sessão atual? O progresso desta sessão será descartado.')) voltarInicio();
@@ -348,4 +432,5 @@
 
   montarDisciplinas();
   montarStats();
+  aplicarModo();
 })();

@@ -253,3 +253,21 @@ td.c { text-align: center; white-space: nowrap; }
 .edital { counter-reset: top; }
 .edital ol > li::before { content: counter(top) "." counter(sub); position: absolute; left: 0; color: var(--muted); font-variant-numeric: tabular-nums; }
 .nota { font-size: .85rem; margin: 14px 0 0; }
+
+/* Prova completa */
+.seg-3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 640px) { .seg-3 { grid-template-columns: 1fr; } }
+.prova-resumo { font-size: .85rem; color: var(--muted); background: var(--bg); border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; }
+.prova-resumo b { color: var(--text); }
+.prova-resumo ul { margin: 6px 0 0; padding-left: 18px; }
+.blocos { display: grid; gap: 8px; margin: 16px 0; }
+.bloco { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line); font-size: .9rem; }
+.bloco.ok { border-color: var(--ok); background: var(--ok-soft); }
+.bloco.bad { border-color: var(--bad); background: var(--bad-soft); }
+.bloco .st { font-weight: 700; font-size: .8rem; }
+.bloco.ok .st { color: var(--ok); }
+.bloco.bad .st { color: var(--bad); }
+.veredito { font-weight: 700; padding: 12px 14px; border-radius: 10px; margin-top: 4px; }
+.veredito.ok { color: var(--ok); background: var(--ok-soft); }
+.veredito.bad { color: var(--bad); background: var(--bad-soft); }
+.q-bloco { font-size: .75rem; color: var(--muted); }

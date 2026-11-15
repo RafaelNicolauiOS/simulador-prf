@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="stylesheet" href="css/style.css?v=6">
 </head>
 <body>
   <header class="topbar">
@@ -33,6 +33,27 @@
         <form id="setup" class="card">
           <h2>Montar sessão</h2>
 
+          <div class="field">
+            <span>Modo</span>
+            <div class="seg seg-3">
+              <label><input type="radio" name="modo" value="treino" checked><span><b>Treino</b><small>Gabarito e comentário a cada item</small></span></label>
+              <label><input type="radio" name="modo" value="simulado"><span><b>Simulado</b><small>Cronômetro e correção só no final</small></span></label>
+              <label><input type="radio" name="modo" value="prova"><span><b>Prova completa</b><small>120 itens em 3 blocos, como na PRF</small></span></label>
+            </div>
+          </div>
+
+          <div id="prova-opts" hidden>
+            <label class="field">
+              <span>Língua estrangeira</span>
+              <select id="lingua">
+                <option value="Língua Inglesa">Inglês</option>
+                <option value="Língua Espanhola">Espanhol</option>
+              </select>
+            </label>
+            <div id="prova-resumo" class="prova-resumo"></div>
+          </div>
+
+          <div id="filtros">
           <label class="field">
             <span>Disciplina</span>
             <select id="disciplina"></select>
@@ -72,13 +93,6 @@
               </select>
             </label>
           </div>
-
-          <div class="field">
-            <span>Modo</span>
-            <div class="seg">
-              <label><input type="radio" name="modo" value="treino" checked><span><b>Treino</b><small>Gabarito e comentário a cada item</small></span></label>
-              <label><input type="radio" name="modo" value="simulado"><span><b>Simulado</b><small>Cronômetro e correção só no final</small></span></label>
-            </div>
           </div>
 
           <p id="setup-info" class="muted"></p>
@@ -144,6 +158,7 @@
           </div>
         </div>
         <p id="r-msg" class="muted"></p>
+        <div id="r-blocos" hidden></div>
         <div id="r-temas" class="temas-bars"></div>
         <div class="result-actions">
           <button class="btn" id="refazer-erradas" type="button">Refazer erradas</button>
@@ -187,6 +202,6 @@
   <script src="data/edital-processo-penal.js?v=1"></script>
   <script src="data/edital-legislacao-especial.js?v=1"></script>
   <script src="data/edital-direitos-humanos.js?v=1"></script>
-  <script src="js/app.js?v=5"></script>
+  <script src="js/app.js?v=6"></script>
 </body>
 </html>

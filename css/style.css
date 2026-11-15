@@ -245,3 +245,11 @@ td.c { text-align: center; white-space: nowrap; }
 .subnav a:hover { color: var(--accent); border-color: var(--accent); }
 .sec-title { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--line); }
 .doc h1, .doc h2 { scroll-margin-top: 16px; }
+.edital { margin: 0; padding-left: 22px; line-height: 1.6; }
+.edital > li { margin-bottom: 8px; }
+.edital ol { list-style: none; padding-left: 4px; counter-reset: sub; margin: 4px 0 0; }
+.edital ol > li { counter-increment: sub; position: relative; padding-left: 34px; font-size: .95rem; }
+.edital > li { counter-increment: top; }
+.edital { counter-reset: top; }
+.edital ol > li::before { content: counter(top) "." counter(sub); position: absolute; left: 0; color: var(--muted); font-variant-numeric: tabular-nums; }
+.nota { font-size: .85rem; margin: 14px 0 0; }

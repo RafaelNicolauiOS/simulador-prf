@@ -43,7 +43,23 @@
   }
 
   /* ---------- Tela inicial ---------- */
-  var selDisc = $('#disciplina'), boxTemas = $('#temas'), selFonte = $('#fonte');
+  var selDisc = $('#disciplina'), boxTemas = $('#temas'), selFonte = $('#fonte'), selTopico = $('#topico');
+  var COM_TOPICO = '__edital';
+
+  function montarTopicos() {
+    var daDisc = BANCO.filter(function (q) { return q.disciplina === selDisc.value && q.topico; });
+    var ts = unicos(daDisc.map(function (q) { return q.topico; })).sort(function (a, b) {
+      return a.localeCompare(b, 'pt-BR', { numeric: true });
+    });
+    $('#topico-field').hidden = !ts.length;
+    var opts = '<option value="">Todos (sem filtro)</option>';
+    if (ts.length) opts += '<option value="' + COM_TOPICO + '">Só itens por tópico do edital (' + daDisc.length + ')</option>';
+    ts.forEach(function (t) {
+      var c = daDisc.filter(function (q) { return q.topico === t; }).length;
+      opts += '<option value="' + esc(t) + '">' + esc(t) + ' (' + c + ')</option>';
+    });
+    selTopico.innerHTML = opts;
+  }
   var GERAL = 'Inéditas (banco geral)', PROVAS = '__provas';
   function fonteDe(q) { return q.fonte || GERAL; }
 
@@ -64,6 +80,7 @@
     var ds = unicos(BANCO.map(function (q) { return q.disciplina; }));
     selDisc.innerHTML = ds.map(function (d) { return '<option>' + esc(d) + '</option>'; }).join('');
     montarFontes();
+    montarTopicos();
     montarTemas();
   }
   function montarTemas() {
@@ -76,10 +93,11 @@
   }
   function filtrarBanco() {
     var temas = Array.prototype.map.call(boxTemas.querySelectorAll('input:checked'), function (i) { return i.value; });
-    var filtro = $('#filtro').value, fonte = selFonte.value;
+    var filtro = $('#filtro').value, fonte = selFonte.value, topico = selTopico.value;
     return BANCO.filter(function (q) {
       if (q.disciplina !== selDisc.value || temas.indexOf(q.tema) < 0) return false;
       if (fonte === PROVAS ? !q.fonte : fonte && fonteDe(q) !== fonte) return false;
+      if (topico === COM_TOPICO ? !q.topico : topico && q.topico !== topico) return false;
       var s = db.q[q.id];
       if (filtro === 'ineditas') return !s;
       if (filtro === 'erradas') return s && s.ult === false;
@@ -120,8 +138,9 @@
     };
   }
 
-  selDisc.addEventListener('change', function () { montarFontes(); montarTemas(); });
+  selDisc.addEventListener('change', function () { montarFontes(); montarTopicos(); montarTemas(); });
   selFonte.addEventListener('change', atualizarInfo);
+  selTopico.addEventListener('change', atualizarInfo);
   boxTemas.addEventListener('change', atualizarInfo);
   $('#filtro').addEventListener('change', atualizarInfo);
 
@@ -157,8 +176,8 @@
     $('#progress-bar').style.width = ((S.i + 1) / n * 100) + '%';
     $('#q-tema').textContent = q.tema;
     $('#q-id').textContent = '#' + q.id;
-    $('#q-fonte').textContent = q.fonte ? q.fonte + (q.ref ? ' · ' + q.ref : '') : '';
-    $('#q-fonte').hidden = !q.fonte;
+    $('#q-fonte').textContent = q.fonte ? q.fonte + (q.ref ? ' · ' + q.ref : '') : (q.topico ? 'Edital PRF · item ' + q.topico.split(' ')[0] : '');
+    $('#q-fonte').hidden = !q.fonte && !q.topico;
     $('#q-texto').textContent = q.enunciado;
 
     var travado = S.modo === 'treino' && S.revelado[q.id];

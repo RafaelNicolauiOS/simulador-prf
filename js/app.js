@@ -77,8 +77,14 @@
   }
 
   function montarDisciplinas() {
-    var ds = unicos(BANCO.map(function (q) { return q.disciplina; }));
-    selDisc.innerHTML = ds.map(function (d) { return '<option>' + esc(d) + '</option>'; }).join('');
+    var ORDEM = ['Língua Portuguesa', 'Raciocínio Lógico-Matemático', 'Informática', 'Física', 'Ética e Cidadania',
+      'Geopolítica', 'Língua Inglesa', 'Língua Espanhola', 'Legislação de Trânsito', 'Direito Administrativo',
+      'Direito Constitucional', 'Direito Penal', 'Direito Processual Penal', 'Legislação Especial', 'Direitos Humanos'];
+    var pos = function (d) { var i = ORDEM.indexOf(d); return i < 0 ? 99 : i; };
+    var ds = unicos(BANCO.map(function (q) { return q.disciplina; })).sort(function (a, b) { return pos(a) - pos(b); });
+    var cont = function (d) { return BANCO.filter(function (q) { return q.disciplina === d; }).length; };
+    selDisc.innerHTML = ds.map(function (d) { return '<option value="' + esc(d) + '">' + esc(d) + ' (' + cont(d) + ')</option>'; }).join('');
+    if (ds.indexOf('Informática') >= 0) selDisc.value = 'Informática';
     montarFontes();
     montarTopicos();
     montarTemas();

@@ -2,7 +2,7 @@
 
 Simulador de questões no estilo **CEBRASPE** (julgamento de itens Certo/Errado) para o concurso da **PRF**.
 
-Disciplinas: **Informática** (215 itens, sendo 100 organizados pelos 10 tópicos do edital PRF 2021), **Direitos Humanos** (67 itens) e **Direito Constitucional** (69 itens).
+Cobre **todas as 15 disciplinas** do Edital PRF nº 1/2021: **2.401 itens**, com 10 itens (5 C / 5 E) para cada um dos 215 subtópicos do edital, além de itens adaptados de provas recentes da banca.
 Página estática: HTML, CSS e JavaScript puros, sem build.
 
 ## Recursos
@@ -12,7 +12,8 @@ Página estática: HTML, CSS e JavaScript puros, sem build.
 - Filtros por assunto, por **origem** (PRF 2021, PC-PE 2024, PF 2025, FUB 2025, SEPLAG-AL 2026, Câmara 2026 ou banco geral), por itens não respondidos e por itens que você errou.
 - Página **Relação de matérias** (`relacao.html`): edital de Informática, Direitos Humanos e Direito Constitucional da PRF × incidência nas provas CEBRASPE recentes.
 - Desempenho por assunto, revisão comentada e “Refazer erradas”.
-- Filtro **Tópico do edital PRF** (Informática): 10 itens por tópico do Edital PRF nº 1/2021, 5 Certo e 5 Errado em cada.
+- Filtro **Tópico do edital PRF**: 10 itens por subtópico do Edital PRF nº 1/2021, 5 Certo e 5 Errado em cada.
+- Validação do banco: `node tools/validar.js --todos`.
 - Atalhos: `C` = Certo, `E` = Errado, `→`/`Enter` = próxima, `←` = anterior.
 - Progresso salvo no navegador (localStorage).
 

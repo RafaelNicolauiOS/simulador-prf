@@ -271,3 +271,7 @@ td.c { text-align: center; white-space: nowrap; }
 .veredito.ok { color: var(--ok); background: var(--ok-soft); }
 .veredito.bad { color: var(--bad); background: var(--bad-soft); }
 .q-bloco { font-size: .75rem; color: var(--muted); }
+@media (max-width: 520px) {
+  .bloco { grid-template-columns: 1fr auto; }
+  .bloco > span:first-child { grid-column: 1 / -1; }
+}

@@ -275,3 +275,10 @@ td.c { text-align: center; white-space: nowrap; }
   .bloco { grid-template-columns: 1fr auto; }
   .bloco > span:first-child { grid-column: 1 / -1; }
 }
+
+/* Rodadas */
+.rodada { background: var(--bg); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; font-size: .85rem; }
+.rodada-head { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.stat-wide { grid-column: 1 / -1; }
+.aviso-rodada { background: var(--ok-soft); color: var(--ok); border-radius: 10px; padding: 10px 12px; font-size: .85rem; font-weight: 600; margin-bottom: 12px; }
+#liberar { margin: -6px 0 12px; display: block; }

@@ -9,6 +9,7 @@ Página estática: HTML, CSS e JavaScript puros, sem build.
 - **Modo Treino**: gabarito e comentário logo após cada item.
 - **Modo Simulado**: cronômetro, folha de respostas, opção de deixar em branco e correção ao final.
 - **Modo Prova completa**: 120 itens nos 3 blocos da PRF (55 + 30 + 35), escolha de inglês ou espanhol, nota por bloco e veredito pelas notas mínimas do edital (15/10/10 e 50 no total).
+- **Rodadas sem repetição**: itens já respondidos não voltam nas sessões (treino, simulado ou prova) até que todos os itens da disciplina tenham sido respondidos; a tela inicial mostra quantos faltam. Itens deixados em branco continuam pendentes.
 - **Nota líquida CEBRASPE**: acertos − erros (em branco não pontua).
 - Filtros por assunto, por **origem** (PRF 2021, PC-PE 2024, PF 2025, FUB 2025, SEPLAG-AL 2026, Câmara 2026 ou banco geral), por itens não respondidos e por itens que você errou.
 - Página **Relação de matérias** (`relacao.html`): edital de Informática, Direitos Humanos e Direito Constitucional da PRF × incidência nas provas CEBRASPE recentes.

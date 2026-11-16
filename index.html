@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/style.css?v=8">
 </head>
 <body>
   <header class="topbar">
@@ -87,15 +87,17 @@
             <label class="field">
               <span>Filtrar</span>
               <select id="filtro">
-                <option value="todas">Todas</option>
-                <option value="ineditas">Não respondidas</option>
+                <option value="pendentes" selected>Não respondidas (sem repetir)</option>
+                <option value="todas">Todas (pode repetir)</option>
                 <option value="erradas">Que errei</option>
               </select>
             </label>
           </div>
           </div>
 
+          <div id="rodada" class="rodada"></div>
           <p id="setup-info" class="muted"></p>
+          <button type="button" class="link-btn" id="liberar" hidden>Liberar de novo os itens deste filtro</button>
           <button type="submit" class="btn btn-primary btn-block">Começar</button>
         </form>
 
@@ -202,6 +204,6 @@
   <script src="data/edital-processo-penal.js?v=1"></script>
   <script src="data/edital-legislacao-especial.js?v=1"></script>
   <script src="data/edital-direitos-humanos.js?v=1"></script>
-  <script src="js/app.js?v=6"></script>
+  <script src="js/app.js?v=7"></script>
 </body>
 </html>

@@ -17,6 +17,34 @@
   db.q = db.q || {};       // { id: { t: tentativas, c: acertos, ult: 'C'|'E'|null (última acertou?) } }
   db.hist = db.hist || []; // [{ d, modo, c, e, b, n }]
 
+  /* ---------- Rodadas sem repetição ----------
+   * Por disciplina: itens já respondidos ficam fora das sessões até que
+   * todos os itens da disciplina tenham sido respondidos; então começa
+   * uma nova rodada. db.ciclo = { disciplina: { rodada, visto: { id: 1 } } } */
+  var TOTAL_DISC = {};
+  BANCO.forEach(function (q) { TOTAL_DISC[q.disciplina] = (TOTAL_DISC[q.disciplina] || 0) + 1; });
+  if (!db.ciclo) {            // migração: o que já foi respondido conta como visto
+    db.ciclo = {};
+    BANCO.forEach(function (q) { if (db.q[q.id]) ciclo(q.disciplina).visto[q.id] = 1; });
+  }
+  var avisosRodada = [];
+  function ciclo(d) { return (db.ciclo[d] = db.ciclo[d] || { rodada: 1, visto: {} }); }
+  function pendente(q) { return !ciclo(q.disciplina).visto[q.id]; }
+  function restantes(d) {
+    var c = ciclo(d);
+    return BANCO.filter(function (q) { return q.disciplina === d && !c.visto[q.id]; }).length;
+  }
+  function fecharCiclos() {
+    Object.keys(TOTAL_DISC).forEach(function (d) {
+      if (restantes(d) === 0) {
+        var c = ciclo(d);
+        avisosRodada.push(d + ': rodada ' + c.rodada + ' concluída');
+        c.rodada++; c.visto = {};
+      }
+    });
+    salvar();
+  }
+
   /* ---------- Utilitários ---------- */
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
@@ -105,25 +133,49 @@
       if (fonte === PROVAS ? !q.fonte : fonte && fonteDe(q) !== fonte) return false;
       if (topico === COM_TOPICO ? !q.topico : topico && q.topico !== topico) return false;
       var s = db.q[q.id];
-      if (filtro === 'ineditas') return !s;
+      if (filtro === 'pendentes') return pendente(q);
       if (filtro === 'erradas') return s && s.ult === false;
       return true;
     });
   }
   function atualizarInfo() {
-    var n = filtrarBanco().length;
-    $('#setup-info').textContent = n + (n === 1 ? ' item disponível' : ' itens disponíveis') + ' com esses filtros.';
+    var n = filtrarBanco().length, d = selDisc.value, c = ciclo(d), falta = restantes(d), tot = TOTAL_DISC[d] || 0;
+    var feitos = tot - falta, pct = tot ? Math.round(feitos / tot * 100) : 0;
+    $('#rodada').innerHTML = '<div class="rodada-head"><span><b>Rodada ' + c.rodada + '</b> · ' + esc(d) + '</span>' +
+      '<span><b>' + falta + '</b> de ' + tot + ' para responder</span></div>' +
+      '<div class="tbar-track"><div class="tbar-fill" style="width:' + pct + '%"></div></div>';
+    var info;
+    if ($('#filtro').value === 'pendentes') {
+      info = n + (n === 1 ? ' item ainda não respondido' : ' itens ainda não respondidos') + ' com esses filtros.';
+      if (!n && falta) info = 'Você já respondeu todos os itens deste filtro nesta rodada. Ainda faltam ' + falta +
+        ' em outros assuntos de ' + d + '.';
+    } else {
+      info = n + (n === 1 ? ' item disponível' : ' itens disponíveis') + ' com esses filtros (podem se repetir).';
+    }
+    $('#setup-info').textContent = info;
+    $('#liberar').hidden = !($('#filtro').value === 'pendentes' && !n && falta);
     $('#setup button[type=submit]').disabled = n === 0;
+    rotularDisciplinas();
+  }
+  function rotularDisciplinas() {
+    Array.prototype.forEach.call(selDisc.options, function (o) {
+      var d = o.value, falta = restantes(d), tot = TOTAL_DISC[d];
+      o.textContent = d + ' (' + (falta === tot ? tot : 'faltam ' + falta + ' de ' + tot) + ')';
+    });
   }
 
   function montarStats() {
     var ids = Object.keys(db.q), t = 0, c = 0;
     ids.forEach(function (id) { t += db.q[id].t; c += db.q[id].c; });
     var pct = t ? Math.round((c / t) * 100) : 0;
-    var html =
+    var faltaTotal = Object.keys(TOTAL_DISC).reduce(function (s, d) { return s + restantes(d); }, 0);
+    var html = (avisosRodada.length ? '<div class="aviso-rodada">🎉 ' + avisosRodada.map(esc).join('<br>') +
+      '. Os itens dessa disciplina voltaram a ficar disponíveis.</div>' : '') +
       '<div class="stat-grid">' +
         '<div class="stat"><b>' + ids.length + '<span class="muted" style="font-size:.9rem;font-weight:500"> / ' + BANCO.length + '</span></b><small>itens já resolvidos</small></div>' +
         '<div class="stat"><b>' + (t ? pct + '%' : '—') + '</b><small>taxa de acerto</small></div>' +
+        '<div class="stat stat-wide"><b>' + faltaTotal + '<span class="muted" style="font-size:.9rem;font-weight:500"> / ' + BANCO.length +
+        '</span></b><small>itens ainda não respondidos na rodada atual (todas as disciplinas)</small></div>' +
       '</div>';
     if (db.hist.length) {
       html += '<h3>Últimas sessões</h3><ul class="hist">' + db.hist.slice(-5).reverse().map(function (h) {
@@ -136,10 +188,11 @@
       html += '<p class="muted">Nenhuma sessão ainda. Seu progresso fica salvo neste navegador.</p>';
     }
     $('#stats').innerHTML = html;
+    avisosRodada = [];
     var z = $('#zerar');
     if (z) z.onclick = function () {
       if (confirm('Apagar todo o histórico e estatísticas salvos neste navegador?')) {
-        db = { q: {}, hist: [] }; salvar(); montarStats(); atualizarInfo();
+        db = { q: {}, hist: [], ciclo: {} }; avisosRodada = []; salvar(); montarStats(); atualizarInfo();
       }
     };
   }
@@ -149,6 +202,14 @@
   selTopico.addEventListener('change', atualizarInfo);
   boxTemas.addEventListener('change', atualizarInfo);
   $('#filtro').addEventListener('change', atualizarInfo);
+
+  $('#liberar').addEventListener('click', function () {
+    var c = ciclo(selDisc.value), filtroAtual = $('#filtro').value;
+    $('#filtro').value = 'todas';
+    filtrarBanco().forEach(function (q) { delete c.visto[q.id]; });
+    $('#filtro').value = filtroAtual;
+    salvar(); atualizarInfo();
+  });
 
   /* ---------- Prova completa (Edital PRF nº 1/2021, item 9.12) ---------- */
   var PROVA = [
@@ -166,7 +227,11 @@
     PROVA.forEach(function (b) {
       b.itens.forEach(function (par) {
         var disc = par[0] === 'LINGUA' ? lingua : par[0];
-        var pool = BANCO.filter(function (q) { return q.disciplina === disc; });
+        var todos = BANCO.filter(function (q) { return q.disciplina === disc; });
+        var pend = todos.filter(pendente);
+        // só repete itens quando a disciplina não tem pendentes suficientes (fim da rodada)
+        var pool = pend.length >= par[1] ? pend : todos;
+        if (pool === todos) pool = pend.concat(embaralhar(todos.filter(function (q) { return !pendente(q); })).slice(0, par[1] - pend.length));
         // metade Certo, metade Errado (aprox.), para não favorecer chute
         var cs = embaralhar(pool.filter(function (q) { return q.gabarito === 'C'; }));
         var es = embaralhar(pool.filter(function (q) { return q.gabarito === 'E'; }));
@@ -301,6 +366,7 @@
     var ok = v === q.gabarito;
     s.t++; if (ok) s.c++; s.ult = ok;
     db.q[q.id] = s;
+    ciclo(q.disciplina).visto[q.id] = 1;
     salvar();
   }
 
@@ -409,7 +475,7 @@
   });
   function voltarInicio() {
     clearInterval(tick); S = null;
-    montarStats(); aplicarModo(); mostrar('home');
+    fecharCiclos(); montarStats(); aplicarModo(); mostrar('home');
   }
   $('#sair').addEventListener('click', function () {
     if (confirm('Sair da sessão atual? O progresso desta sessão será descartado.')) voltarInicio();
@@ -430,6 +496,7 @@
     else if (k === 'arrowleft') { if (S.i > 0) { S.i--; render(); } }
   });
 
+  fecharCiclos();
   montarDisciplinas();
   montarStats();
   aplicarModo();

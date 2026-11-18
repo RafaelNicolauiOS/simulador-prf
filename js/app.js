@@ -180,7 +180,7 @@
     if (db.hist.length) {
       html += '<h3>Últimas sessões</h3><ul class="hist">' + db.hist.slice(-5).reverse().map(function (h) {
         var d = new Date(h.d);
-        return '<li><span>' + d.toLocaleDateString('pt-BR') + ' · ' + (h.modo === 'prova' ? 'Prova completa' : h.modo === 'simulado' ? 'Simulado' : 'Treino') + '</span>' +
+        return '<li><span>' + d.toLocaleDateString('pt-BR') + ' · ' + (h.modo === 'prova' ? (h.sim ? 'Simulado ' + h.sim.slice(1) : 'Prova completa') : h.modo === 'simulado' ? 'Simulado' : 'Treino') + '</span>' +
           '<span><b>' + (h.c - h.e) + '</b> <span class="muted">líq. (' + h.c + '✓ ' + h.e + '✗ de ' + h.n + ')</span></span></li>';
       }).join('') + '</ul>';
       html += '<button type="button" class="link-btn" id="zerar">Zerar histórico</button>';
@@ -192,7 +192,7 @@
     var z = $('#zerar');
     if (z) z.onclick = function () {
       if (confirm('Apagar todo o histórico e estatísticas salvos neste navegador?')) {
-        db = { q: {}, hist: [], ciclo: {} }; avisosRodada = []; salvar(); montarStats(); atualizarInfo();
+        db = { q: {}, hist: [], ciclo: {}, sims: {} }; avisosRodada = []; salvar(); montarStats(); atualizarInfo();
       }
     };
   }
@@ -213,13 +213,37 @@
 
   /* ---------- Prova completa (Edital PRF nº 1/2021, item 9.12) ---------- */
   var PROVA = [
-    { bloco: 'I', minimo: 15, itens: [['Língua Portuguesa', 13], ['Raciocínio Lógico-Matemático', 8], ['Informática', 7],
-      ['Física', 7], ['Ética e Cidadania', 7], ['Geopolítica', 7], ['LINGUA', 6]] },
+    { bloco: 'I', minimo: 15, itens: [['Língua Portuguesa', 18], ['Raciocínio Lógico-Matemático', 6], ['Informática', 7],
+      ['Física', 5], ['Ética e Cidadania', 6], ['Geopolítica', 5], ['LINGUA', 8]] },
     { bloco: 'II', minimo: 10, itens: [['Legislação de Trânsito', 30]] },
-    { bloco: 'III', minimo: 10, itens: [['Direito Administrativo', 6], ['Direito Constitucional', 7], ['Direito Penal', 6],
+    { bloco: 'III', minimo: 10, itens: [['Direito Administrativo', 7], ['Direito Constitucional', 7], ['Direito Penal', 5],
       ['Direito Processual Penal', 5], ['Legislação Especial', 6], ['Direitos Humanos', 5]] }
   ];
   var MINIMO_TOTAL = 50;
+  var SIMULADOS = window.SIMULADOS || [];
+  var POR_ID = {};
+  BANCO.forEach(function (q) { POR_ID[q.id] = q; });
+  db.sims = db.sims || {};   // { S01: { liq, d, ok } }
+
+  function montarSimuladosFixos() {
+    var sel = $('#prova-qual'), atual = sel.value;
+    sel.innerHTML = '<option value="">Aleatória (itens ainda não respondidos)</option>' + SIMULADOS.map(function (sm) {
+      var r = db.sims[sm.id];
+      return '<option value="' + sm.id + '">' + esc(sm.nome) + (r ? ' — feito: ' + r.liq + ' pts' + (r.ok ? ' ✓' : ' ✗') : '') + '</option>';
+    }).join('');
+    if (atual) sel.value = atual;
+  }
+  function itensSimulado(id) {
+    var sm = SIMULADOS.filter(function (x) { return x.id === id; })[0];
+    if (!sm) return null;
+    var lingua = $('#lingua').value === 'Língua Espanhola' ? sm.esp : sm.ing;
+    var base = sm.i.split(',').map(function (p) { var a = p.split(':'); return { q: POR_ID[a[0]], bloco: a[1] }; });
+    var ling = lingua.split(',').map(function (id2) { return { q: POR_ID[id2], bloco: 'I' }; });
+    // língua estrangeira entra no fim do Bloco I, como na prova
+    var fimI = 0; base.forEach(function (x, i) { if (x.bloco === 'I') fimI = i + 1; });
+    var lista = base.slice(0, fimI).concat(ling, base.slice(fimI));
+    return lista.filter(function (x) { return x.q; });
+  }
   function modoAtual() { return document.querySelector('input[name=modo]:checked').value; }
 
   function montarProva() {
@@ -249,7 +273,7 @@
       var n = b.itens.reduce(function (s, p) { return s + p[1]; }, 0);
       return '<div style="margin-top:8px"><b>Bloco ' + b.bloco + '</b> (' + n + ' itens, mínimo ' + b.minimo + ' pontos): ' +
         b.itens.map(function (p) { return (p[0] === 'LINGUA' ? 'Língua estrangeira' : p[0]) + ' ' + p[1]; }).join(' · ') + '</div>';
-    }).join('') + '<div style="margin-top:8px">Mínimo de ' + MINIMO_TOTAL + ' pontos no total. A divisão por disciplina é aproximada, baseada na prova de 2021; o edital fixa apenas o total de cada bloco.</div>';
+    }).join('') + '<div style="margin-top:8px">Mínimo de ' + MINIMO_TOTAL + ' pontos no total. Distribuição por disciplina conforme a prova objetiva de 2021; o edital fixa apenas o total de cada bloco.</div>';
   }
 
   function aplicarModo() {
@@ -258,17 +282,23 @@
     $('#prova-opts').hidden = !prova;
     if (prova) {
       resumoProva();
-      $('#setup-info').textContent = 'Tempo oficial: 4h30 para a prova objetiva e a discursiva.';
+      montarSimuladosFixos();
+      var qual = $('#prova-qual').value;
+      $('#setup-info').textContent = (qual ? 'Simulado fixo: sempre os mesmos 120 itens, para você comparar sua evolução. ' :
+        'Prova aleatória com itens que você ainda não respondeu. ') + 'Tempo oficial: 4h30 para a prova objetiva e a discursiva.';
       $('#setup button[type=submit]').disabled = false;
     } else atualizarInfo();
   }
   document.querySelectorAll('input[name=modo]').forEach(function (i) { i.addEventListener('change', aplicarModo); });
+  $('#prova-qual').addEventListener('change', aplicarModo);
 
   $('#setup').addEventListener('submit', function (ev) {
     ev.preventDefault();
     if (modoAtual() === 'prova') {
-      var itens = montarProva();
+      var qual = $('#prova-qual').value;
+      var itens = qual ? itensSimulado(qual) : montarProva();
       iniciar(itens.map(function (x) { return x.q; }), 'prova', itens.map(function (x) { return x.bloco; }));
+      S.simId = qual || null;
       return;
     }
     var qtd = +$('#quantidade').value;
@@ -400,7 +430,7 @@
       else e++;
     });
     var liq = c - e, n = S.lista.length;
-    db.hist.push({ d: Date.now(), modo: S.modo, c: c, e: e, b: b, n: n });
+    db.hist.push({ d: Date.now(), modo: S.modo, c: c, e: e, b: b, n: n, sim: S.simId || undefined });
     if (db.hist.length > 50) db.hist = db.hist.slice(-50);
     salvar();
 
@@ -454,6 +484,7 @@
         (n - c - e) + ' em branco</span><span><b>' + nota + '</b> / mín. ' + b.minimo + '</span><span class="st">' + (ok ? 'OK' : 'ABAIXO') + '</span></div>';
     }).join('');
     if (liq < MINIMO_TOTAL) reprovado.push('total abaixo de ' + MINIMO_TOTAL);
+    if (S.simId) { db.sims[S.simId] = { liq: liq, d: Date.now(), ok: !reprovado.length }; salvar(); }
     html += '<div class="veredito ' + (reprovado.length ? 'bad' : 'ok') + '">' + (reprovado.length
       ? 'Pelos critérios do edital, você seria eliminado na prova objetiva: ' + reprovado.join('; ') + '.'
       : 'Pelos critérios do edital, você passaria na prova objetiva (nota total ' + liq + ' de 120).') + '</div>';

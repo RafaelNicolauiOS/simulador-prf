@@ -9,6 +9,7 @@ Página estática: HTML, CSS e JavaScript puros, sem build.
 - **Modo Treino**: gabarito e comentário logo após cada item.
 - **Modo Simulado**: cronômetro, folha de respostas, opção de deixar em branco e correção ao final.
 - **Modo Prova completa**: 120 itens nos 3 blocos da PRF (55 + 30 + 35), escolha de inglês ou espanhol, nota por bloco e veredito pelas notas mínimas do edital (15/10/10 e 50 no total).
+- **20 simulados fixos** (Simulado 01 a 20) com a distribuição da prova objetiva PRF 2021: Trânsito 30, Português 18, Língua estrangeira 8, Administrativo 7, Informática 7, Constitucional 7, RLM 6, Ética 6, Legislação Especial 6, Física 5, Geopolítica 5, Penal 5, Processo Penal 5 e Direitos Humanos 5. A nota de cada simulado fica registrada. Para regenerar: `node tools/gerar-simulados.js 20`.
 - **Rodadas sem repetição**: itens já respondidos não voltam nas sessões (treino, simulado ou prova) até que todos os itens da disciplina tenham sido respondidos; a tela inicial mostra quantos faltam. Itens deixados em branco continuam pendentes.
 - **Nota líquida CEBRASPE**: acertos − erros (em branco não pontua).
 - Filtros por assunto, por **origem** (PRF 2021, PC-PE 2024, PF 2025, FUB 2025, SEPLAG-AL 2026, Câmara 2026 ou banco geral), por itens não respondidos e por itens que você errou.

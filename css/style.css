@@ -282,3 +282,8 @@ td.c { text-align: center; white-space: nowrap; }
 .stat-wide { grid-column: 1 / -1; }
 .aviso-rodada { background: var(--ok-soft); color: var(--ok); border-radius: 10px; padding: 10px 12px; font-size: .85rem; font-weight: 600; margin-bottom: 12px; }
 #liberar { margin: -6px 0 12px; display: block; }
+@media (max-width: 420px) {
+  .quiz-nav { flex-wrap: wrap; }
+  .quiz-nav .btn { flex: 1; }
+  .quiz-nav .btn-ghost { order: 3; flex-basis: 100%; margin: 0; }
+}

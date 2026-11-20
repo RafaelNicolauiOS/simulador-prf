@@ -155,6 +155,9 @@ select {
 .feedback.ok h4 { color: var(--ok); }
 .feedback.bad h4 { color: var(--bad); }
 .feedback p { margin: 0; font-size: .95rem; }
+.coment-corpo p, .rev .coment p { margin: 0 0 8px; line-height: 1.55; }
+.coment-corpo p:last-child, .rev .coment p:last-child { margin-bottom: 0; }
+.coment-corpo p.item, .rev .coment p.item { margin: 0 0 4px; padding-left: 14px; }
 
 .quiz-nav { display: flex; justify-content: space-between; gap: 10px; margin: 16px 0; }
 .quiz-nav .btn-ghost { margin-right: auto; }
@@ -201,6 +204,7 @@ select {
 .rev-head { display: flex; justify-content: space-between; gap: 8px; font-size: .8rem; color: var(--muted); margin-bottom: 6px; flex-wrap: wrap; }
 .rev p { margin: 0 0 8px; }
 .rev .coment { font-size: .9rem; color: var(--muted); margin: 0; }
+.rev .coment b { color: var(--text, inherit); }
 .pill { font-weight: 700; }
 .pill.ok { color: var(--ok); }
 .pill.bad { color: var(--bad); }

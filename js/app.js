@@ -51,6 +51,16 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
+  /* Comentário em parágrafos: cada linha vira um <p>; "Correto."/"Errado." e rótulos como "Dica de prova:" em negrito. */
+  var ROTULOS = /^(Dica de prova|Dica|Macete|Atenção|Resumo|Observação|Lembre-se|Conferência|Interpretação|Passo a passo|Resolução)([^:]{0,30}):/;
+  function comentarioHtml(s) {
+    return String(s).split(/\n+/).map(function (l, i) {
+      var h = esc(l);
+      if (i === 0) h = h.replace(/^(Correto\.|Errado\.)/, '<b>$1</b>');
+      else h = h.replace(ROTULOS, '<b>$1$2:</b>');
+      return '<p' + (/^• /.test(l) ? ' class="item"' : '') + '>' + h + '</p>';
+    }).join('');
+  }
   function embaralhar(a) {
     a = a.slice();
     for (var i = a.length - 1; i > 0; i--) {
@@ -350,7 +360,7 @@
       var ok = r === q.gabarito;
       fb.className = 'feedback ' + (ok ? 'ok' : 'bad');
       fb.innerHTML = '<h4>' + (ok ? '✓ Você acertou' : '✗ Você errou') + ' — gabarito: ' +
-        (q.gabarito === 'C' ? 'CERTO' : 'ERRADO') + '</h4><p>' + esc(q.comentario) + '</p>';
+        (q.gabarito === 'C' ? 'CERTO' : 'ERRADO') + '</h4><div class="coment-corpo">' + comentarioHtml(q.comentario) + '</div>';
       fb.hidden = false;
     } else {
       fb.hidden = true;
@@ -457,7 +467,7 @@
       return '<div class="rev ' + cls + '"><div class="rev-head"><span>' + (idx + 1) + '. ' + esc(q.tema) + (q.fonte ? ' · ' + esc(q.fonte) : '') + ' · #' + q.id + '</span>' +
         '<span>Sua resposta: <span class="pill ' + (cls === 'blank' ? '' : cls) + '">' + sua + '</span> · Gabarito: <b>' +
         (q.gabarito === 'C' ? 'Certo' : 'Errado') + '</b></span></div>' +
-        '<p>' + esc(q.enunciado) + '</p><p class="coment">' + esc(q.comentario) + '</p></div>';
+        '<p>' + esc(q.enunciado) + '</p><div class="coment">' + comentarioHtml(q.comentario) + '</div></div>';
     }).join('');
 
     var erradas = S.lista.filter(function (q) { return S.resp[q.id] && S.resp[q.id] !== q.gabarito; });

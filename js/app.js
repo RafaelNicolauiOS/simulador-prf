@@ -622,7 +622,7 @@
             return '<div class="rev ' + (p.rec ? 'ok' : 'bad') + '"><div class="rev-head"><span>#' + q.id + (q.fonte ? ' · ' + esc(q.fonte) : '') + '</span>' +
               '<span>' + (p.rec ? '<span class="pill ok">Recuperada</span>' : '<span class="pill bad">' + (p.ult === 'branco' ? 'Em branco' : 'Errada') + '</span>') +
               ' · separada ' + p.vezes + 'x · tentativas depois: ' + p.tent + '</span></div>' +
-              '<p>' + esc(q.enunciado) + '</p><p class="coment"><b>Gabarito: ' + (q.gabarito === 'C' ? 'Certo' : 'Errado') + '.</b> ' + esc(q.comentario) + '</p></div>';
+              '<p>' + esc(q.enunciado) + '</p><p class="coment"><b>Gabarito: ' + (q.gabarito === 'C' ? 'Certo' : 'Errado') + '</b></p><div class="coment">' + comentarioHtml(q.comentario) + '</div></div>';
           }).join('') + '</details></article>';
       }).join('') + '</section>';
     }).join('');

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=9">
+  <link rel="stylesheet" href="css/style.css?v=10">
 </head>
 <body>
   <header class="topbar">
@@ -17,7 +17,7 @@
         <span class="brand-mark">PRF</span>
         <span class="brand-text">Simulador <small>Certo ou Errado · estilo CEBRASPE</small></span>
       </a>
-      <nav class="topnav"><a href="relacao.html">Relação de matérias</a></nav>
+      <nav class="topnav"><a href="#" data-view="home" class="ativo">Simular</a><a href="#" data-view="portfolio">Portfólio</a><a href="#" data-view="evolucao">Evolução</a><a href="relacao.html">Edital</a></nav>
     </div>
   </header>
 
@@ -164,6 +164,7 @@
           </div>
         </div>
         <p id="r-msg" class="muted"></p>
+        <p id="r-port" class="aviso-port" hidden></p>
         <div id="r-blocos" hidden></div>
         <div id="r-temas" class="temas-bars"></div>
         <div class="result-actions">
@@ -174,6 +175,40 @@
 
       <h3 class="section-title">Revisão dos itens</h3>
       <div id="revisao" class="revisao"></div>
+    </section>
+
+    <!-- PORTFÓLIO -->
+    <section id="view-portfolio" class="view" hidden>
+      <div class="hero">
+        <h1>Portfólio de erros</h1>
+        <p>Toda questão que você erra ou deixa em branco em um simulado ou prova completa vem para cá, agrupada por tópico do edital e com material de estudo: resumo, pontos-chave, macetes, dicas e pegadinhas. Quando você acertar a questão depois (no treino ou em outra prova), ela passa a contar como recuperada.</p>
+      </div>
+      <div id="port-stats" class="stat-grid stat-grid-4"></div>
+      <div class="card port-ctrl">
+        <label class="field"><span>Disciplina</span><select id="port-disc"></select></label>
+        <label class="field"><span>Mostrar</span>
+          <select id="port-status">
+            <option value="pendentes">Pendentes</option>
+            <option value="recuperadas">Recuperadas</option>
+            <option value="todas">Todas</option>
+          </select>
+        </label>
+        <button type="button" class="btn btn-primary" id="port-treinar">Treinar pendentes</button>
+      </div>
+      <div id="port-lista"></div>
+    </section>
+
+    <!-- EVOLUÇÃO -->
+    <section id="view-evolucao" class="view" hidden>
+      <div class="hero">
+        <h1>Painel de evolução</h1>
+        <p>Acompanhe quanto dos seus erros você já recuperou e como o seu aproveitamento evolui de prova em prova.</p>
+      </div>
+      <div id="evo-stats" class="stat-grid stat-grid-4"></div>
+      <div class="card evo-card"><h2>Aproveitamento por simulado ou prova</h2><p class="muted sub">Nota líquida (acertos − erros) ÷ número de itens, em ordem cronológica.</p><div id="evo-chart1"></div></div>
+      <div class="card evo-card"><h2>Erros separados × recuperados</h2><p class="muted sub">Total acumulado por dia. Quanto mais a linha de recuperadas se aproxima da de separadas, melhor.</p><div id="evo-chart2"></div></div>
+      <div class="card evo-card"><h2>Evolução por disciplina</h2><div id="evo-tabela"></div></div>
+      <div class="card evo-card"><h2>Tópicos que mais precisam de revisão</h2><div id="evo-criticos"></div></div>
     </section>
   </main>
 
@@ -209,6 +244,13 @@
   <script src="data/edital-legislacao-especial.js?v=1"></script>
   <script src="data/edital-direitos-humanos.js?v=1"></script>
   <script src="data/simulados.js?v=1"></script>
-  <script src="js/app.js?v=8"></script>
+  <script src="data/estudo-linguas.js?v=1"></script>
+  <script src="data/estudo-exatas.js?v=1"></script>
+  <script src="data/estudo-informatica-etica-geo.js?v=1"></script>
+  <script src="data/estudo-transito-legislacao.js?v=1"></script>
+  <script src="data/estudo-administrativo.js?v=1"></script>
+  <script src="data/estudo-penal.js?v=1"></script>
+  <script src="data/estudo-constitucional-dh.js?v=1"></script>
+  <script src="js/app.js?v=9"></script>
 </body>
 </html>

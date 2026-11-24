@@ -15,7 +15,10 @@
   }
   var db = carregar();
   db.q = db.q || {};       // { id: { t: tentativas, c: acertos, ult: 'C'|'E'|null (última acertou?) } }
-  db.hist = db.hist || []; // [{ d, modo, c, e, b, n }]
+  db.hist = db.hist || []; // [{ d, modo, c, e, b, n, sim, por: { disciplina: { c, e, b, n } } }]
+  // Portfólio de erros: itens errados ou em branco em simulados/provas
+  // { id: { desde, vezes, ult: 'erro'|'branco', tent, acertos, rec, recEm } }
+  db.port = db.port || {};
 
   /* ---------- Rodadas sem repetição ----------
    * Por disciplina: itens já respondidos ficam fora das sessões até que
@@ -76,7 +79,8 @@
     return h ? h + ':' + mm + ':' + ss : mm + ':' + ss;
   }
   function mostrar(view) {
-    ['home', 'quiz', 'result'].forEach(function (v) { $('#view-' + v).hidden = v !== view; });
+    ['home', 'quiz', 'result', 'portfolio', 'evolucao'].forEach(function (v) { $('#view-' + v).hidden = v !== view; });
+    document.querySelectorAll('.topnav [data-view]').forEach(function (a) { a.classList.toggle('ativo', a.dataset.view === view || (view !== 'portfolio' && view !== 'evolucao' && a.dataset.view === 'home')); });
     window.scrollTo(0, 0);
   }
 
@@ -202,7 +206,7 @@
     var z = $('#zerar');
     if (z) z.onclick = function () {
       if (confirm('Apagar todo o histórico e estatísticas salvos neste navegador?')) {
-        db = { q: {}, hist: [], ciclo: {}, sims: {} }; avisosRodada = []; salvar(); montarStats(); atualizarInfo();
+        db = { q: {}, hist: [], ciclo: {}, sims: {}, port: {} }; avisosRodada = []; salvar(); montarStats(); atualizarInfo();
       }
     };
   }
@@ -407,7 +411,18 @@
     s.t++; if (ok) s.c++; s.ult = ok;
     db.q[q.id] = s;
     ciclo(q.disciplina).visto[q.id] = 1;
+    var p = db.port[q.id];
+    if (p) {                       // nova tentativa de um item do portfólio
+      p.tent++;
+      if (ok) { p.acertos++; p.rec = true; if (!p.recEm) p.recEm = Date.now(); }
+      else p.rec = false;
+    }
     salvar();
+  }
+  function separar(q, branco) {
+    var p = db.port[q.id];
+    if (!p) p = db.port[q.id] = { desde: Date.now(), vezes: 0, tent: 0, acertos: 0, rec: false, recEm: null };
+    p.vezes++; p.ult = branco ? 'branco' : 'erro'; p.rec = false;
   }
 
   function avancar() {
@@ -421,6 +436,12 @@
       var msg = brancos ? 'Você deixou ' + brancos + ' item(ns) em branco. Finalizar mesmo assim?' : (S.modo === 'prova' ? 'Finalizar e corrigir a prova?' : 'Finalizar e corrigir o simulado?');
       if (!confirm(msg)) return;
       S.lista.forEach(function (q) { if (S.resp[q.id]) registrar(q, S.resp[q.id]); });
+      S.separadas = 0;
+      S.lista.forEach(function (q) {
+        var r = S.resp[q.id];
+        if (!r || r !== q.gabarito) { separar(q, !r); S.separadas++; }
+      });
+      salvar();
     }
     clearInterval(tick);
     S.fim = Date.now();
@@ -440,8 +461,13 @@
       else e++;
     });
     var liq = c - e, n = S.lista.length;
-    db.hist.push({ d: Date.now(), modo: S.modo, c: c, e: e, b: b, n: n, sim: S.simId || undefined });
-    if (db.hist.length > 50) db.hist = db.hist.slice(-50);
+    var por = {};
+    S.lista.forEach(function (q) {
+      var k = por[q.disciplina] = por[q.disciplina] || { c: 0, e: 0, b: 0, n: 0 }, r = S.resp[q.id];
+      k.n++; if (!r) k.b++; else if (r === q.gabarito) k.c++; else k.e++;
+    });
+    db.hist.push({ d: Date.now(), modo: S.modo, c: c, e: e, b: b, n: n, sim: S.simId || undefined, por: por });
+    if (db.hist.length > 300) db.hist = db.hist.slice(-300);
     salvar();
 
     $('#r-liquida').textContent = liq;
@@ -454,6 +480,13 @@
       (e > 0 && b === 0 && liq < n / 2 ? ' Dica: na CEBRASPE, deixar em branco itens de que você não tem segurança pode elevar a nota.' : '');
 
     renderBlocos(liq);
+    var avisoPort = $('#r-port');
+    if (S.modo !== 'treino' && S.separadas) {
+      avisoPort.innerHTML = '📌 <b>' + S.separadas + '</b> ' + (S.separadas === 1 ? 'questão errada ou em branco foi separada' : 'questões erradas ou em branco foram separadas') +
+        ' no seu portfólio, com material de estudo do tópico. <button type="button" class="link-btn" id="ir-port">Abrir portfólio</button>';
+      avisoPort.hidden = false;
+      $('#ir-port').onclick = function () { clearInterval(tick); S = null; fecharCiclos(); abrirPortfolio(); };
+    } else avisoPort.hidden = true;
 
     $('#r-temas').innerHTML = Object.keys(porTema).map(function (k) {
       var t = porTema[k], p = Math.round(t.c / t.n * 100);
@@ -501,6 +534,237 @@
     box.innerHTML = '<div class="blocos">' + html + '</div>';
     box.hidden = false;
   }
+
+
+  /* ======================= Portfólio de erros ======================= */
+  var ESTUDO = window.ESTUDO || {};
+  function chaveEstudo(q) { return q.disciplina + '|' + (q.topico ? q.topico : 'tema:' + q.tema); }
+  function rotuloChave(k) { var t = k.split('|')[1]; return t.indexOf('tema:') === 0 ? t.slice(5) : t; }
+  function itensPortfolio() {
+    return Object.keys(db.port).map(function (id) { return { q: POR_ID_GLOBAL[id], p: db.port[id] }; })
+      .filter(function (x) { return x.q; });
+  }
+  var POR_ID_GLOBAL = {};
+  BANCO.forEach(function (q) { POR_ID_GLOBAL[q.id] = q; });
+  var ORDEM_DISC = ['Língua Portuguesa', 'Raciocínio Lógico-Matemático', 'Informática', 'Física', 'Ética e Cidadania',
+    'Geopolítica', 'Língua Inglesa', 'Língua Espanhola', 'Legislação de Trânsito', 'Direito Administrativo',
+    'Direito Constitucional', 'Direito Penal', 'Direito Processual Penal', 'Legislação Especial', 'Direitos Humanos'];
+  function ordemDisc(a, b) { var x = ORDEM_DISC.indexOf(a), y = ORDEM_DISC.indexOf(b); return (x < 0 ? 99 : x) - (y < 0 ? 99 : y); }
+
+  function htmlEstudo(k) {
+    var e = ESTUDO[k];
+    if (!e) return '<p class="muted">Material de estudo deste tópico ainda não disponível.</p>';
+    var lista = function (titulo, arr, cls) {
+      return arr && arr.length ? '<h4 class="' + cls + '">' + titulo + '</h4><ul>' + arr.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : '';
+    };
+    return '<div class="estudo"><p class="estudo-resumo">' + esc(e.resumo) + '</p>' +
+      lista('📘 Pontos-chave', e.pontos, 'h-pontos') + lista('💡 Macetes', e.macetes, 'h-macetes') +
+      lista('🎯 Dicas de prova', e.dicas, 'h-dicas') + lista('⚠️ Pegadinhas da banca', e.pegadinhas, 'h-pegadinhas') + '</div>';
+  }
+
+  function abrirPortfolio() { renderPortfolio(); mostrar('portfolio'); }
+
+  function renderPortfolio() {
+    var todos = itensPortfolio();
+    var pend = todos.filter(function (x) { return !x.p.rec; }), recup = todos.length - pend.length;
+    $('#port-stats').innerHTML =
+      '<div class="stat"><b>' + todos.length + '</b><small>questões separadas</small></div>' +
+      '<div class="stat"><b>' + pend.length + '</b><small>pendentes para revisar</small></div>' +
+      '<div class="stat"><b>' + recup + '</b><small>recuperadas (acertou depois)</small></div>' +
+      '<div class="stat"><b>' + (todos.length ? Math.round(recup / todos.length * 100) + '%' : '—') + '</b><small>taxa de recuperação</small></div>';
+
+    var selD = $('#port-disc'), atualD = selD.value;
+    var discs = unicos(todos.map(function (x) { return x.q.disciplina; })).sort(ordemDisc);
+    selD.innerHTML = '<option value="">Todas as disciplinas</option>' + discs.map(function (d) {
+      var n = todos.filter(function (x) { return x.q.disciplina === d && !x.p.rec; }).length;
+      return '<option value="' + esc(d) + '">' + esc(d) + ' (' + n + ' pendentes)</option>';
+    }).join('');
+    if (discs.indexOf(atualD) >= 0) selD.value = atualD;
+
+    var status = $('#port-status').value, d = selD.value;
+    var vis = todos.filter(function (x) {
+      if (d && x.q.disciplina !== d) return false;
+      if (status === 'pendentes') return !x.p.rec;
+      if (status === 'recuperadas') return x.p.rec;
+      return true;
+    });
+    var pendVis = vis.filter(function (x) { return !x.p.rec; });
+    $('#port-treinar').disabled = !pendVis.length;
+    $('#port-treinar').textContent = 'Treinar ' + pendVis.length + ' pendente' + (pendVis.length === 1 ? '' : 's') + ' (modo treino)';
+
+    if (!todos.length) {
+      $('#port-lista').innerHTML = '<div class="card vazio"><h3>Seu portfólio está vazio</h3><p class="muted">Faça um simulado ou uma prova completa. Ao finalizar, as questões que você errar ou deixar em branco são separadas aqui automaticamente, agrupadas por tópico e com material de estudo.</p></div>';
+      return;
+    }
+    if (!vis.length) { $('#port-lista').innerHTML = '<p class="muted">Nenhuma questão com esses filtros.</p>'; return; }
+
+    // agrupa disciplina > tópico
+    var grupos = {};
+    vis.forEach(function (x) {
+      var g = grupos[x.q.disciplina] = grupos[x.q.disciplina] || {};
+      var k = chaveEstudo(x.q);
+      (g[k] = g[k] || []).push(x);
+    });
+    var html = Object.keys(grupos).sort(ordemDisc).map(function (disc) {
+      var topicos = Object.keys(grupos[disc]).sort(function (a, b) {
+        return grupos[disc][b].filter(function (x) { return !x.p.rec; }).length - grupos[disc][a].filter(function (x) { return !x.p.rec; }).length ||
+          rotuloChave(a).localeCompare(rotuloChave(b), 'pt-BR', { numeric: true });
+      });
+      return '<section class="port-disc"><h2>' + esc(disc) + '</h2>' + topicos.map(function (k) {
+        var itens = grupos[disc][k], np = itens.filter(function (x) { return !x.p.rec; }).length;
+        return '<article class="card port-top"><div class="port-top-head"><div><h3>' + esc(rotuloChave(k)) + '</h3>' +
+          '<span class="muted">' + itens.length + ' separada' + (itens.length === 1 ? '' : 's') + ' · ' +
+          (np ? '<b class="txt-bad">' + np + ' pendente' + (np === 1 ? '' : 's') + '</b>' : '<b class="txt-ok">tudo recuperado</b>') + '</span></div>' +
+          '<button type="button" class="btn btn-sm" data-treinar="' + esc(k) + '"' + (np ? '' : ' disabled') + '>Treinar tópico</button></div>' +
+          '<details class="port-det" open><summary>Material de estudo</summary>' + htmlEstudo(k) + '</details>' +
+          '<details class="port-det"><summary>Questões (' + itens.length + ')</summary>' + itens.map(function (x) {
+            var q = x.q, p = x.p;
+            return '<div class="rev ' + (p.rec ? 'ok' : 'bad') + '"><div class="rev-head"><span>#' + q.id + (q.fonte ? ' · ' + esc(q.fonte) : '') + '</span>' +
+              '<span>' + (p.rec ? '<span class="pill ok">Recuperada</span>' : '<span class="pill bad">' + (p.ult === 'branco' ? 'Em branco' : 'Errada') + '</span>') +
+              ' · separada ' + p.vezes + 'x · tentativas depois: ' + p.tent + '</span></div>' +
+              '<p>' + esc(q.enunciado) + '</p><p class="coment"><b>Gabarito: ' + (q.gabarito === 'C' ? 'Certo' : 'Errado') + '.</b> ' + esc(q.comentario) + '</p></div>';
+          }).join('') + '</details></article>';
+      }).join('') + '</section>';
+    }).join('');
+    $('#port-lista').innerHTML = html;
+    $('#port-lista').querySelectorAll('[data-treinar]').forEach(function (b) {
+      b.onclick = function () {
+        var k = b.getAttribute('data-treinar');
+        var lista = itensPortfolio().filter(function (x) { return !x.p.rec && chaveEstudo(x.q) === k; }).map(function (x) { return x.q; });
+        iniciar(embaralhar(lista), 'treino');
+      };
+    });
+  }
+  $('#port-disc').addEventListener('change', renderPortfolio);
+  $('#port-status').addEventListener('change', renderPortfolio);
+  $('#port-treinar').addEventListener('click', function () {
+    var d = $('#port-disc').value;
+    var lista = itensPortfolio().filter(function (x) { return !x.p.rec && (!d || x.q.disciplina === d); }).map(function (x) { return x.q; });
+    iniciar(embaralhar(lista), 'treino');
+  });
+
+  /* ======================= Painel de evolução ======================= */
+  function svgLinhas(series, opts) {
+    // series: [{ nome, cls, pts: [{ y, rot }] }] — eixo x = ordem; eixo y de 0 a yMax
+    var W = 640, H = 240, L = 44, R = 16, T = 16, B = 34;
+    var n = Math.max.apply(null, series.map(function (s) { return s.pts.length; }));
+    var yMax = opts.yMax, yMin = opts.yMin || 0;
+    var x = function (i) { return L + (n <= 1 ? (W - L - R) / 2 : i * (W - L - R) / (n - 1)); };
+    var y = function (v) { return T + (1 - (v - yMin) / (yMax - yMin)) * (H - T - B); };
+    var g = '';
+    opts.ticks.forEach(function (t) {
+      g += '<line class="grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(t) + '" y2="' + y(t) + '"/>' +
+        '<text class="ax" x="' + (L - 8) + '" y="' + (y(t) + 4) + '" text-anchor="end">' + opts.fmt(t) + '</text>';
+    });
+    var passo = Math.max(1, Math.ceil(n / 8));
+    for (var i = 0; i < n; i += passo) g += '<text class="ax" x="' + x(i) + '" y="' + (H - 12) + '" text-anchor="middle">' + (opts.xRot ? opts.xRot(i) : i + 1) + '</text>';
+    series.forEach(function (s) {
+      var d = s.pts.map(function (p, i) { return (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(p.y).toFixed(1); }).join(' ');
+      g += '<path class="ln ' + s.cls + '" d="' + d + '"/>';
+      s.pts.forEach(function (p, i) {
+        g += '<g class="pt"><circle class="hit" cx="' + x(i) + '" cy="' + y(p.y) + '" r="12"/><circle class="dot ' + s.cls + '" cx="' + x(i) + '" cy="' + y(p.y) + '" r="4.5"/>' +
+          '<title>' + esc(p.rot) + '</title></g>';
+      });
+      var u = s.pts[s.pts.length - 1];
+      if (u && series.length > 1) g += '<text class="lbl" x="' + Math.min(x(s.pts.length - 1) + 8, W - R) + '" y="' + (y(u.y) - 8) + '" text-anchor="end">' + esc(s.nome) + '</text>';
+    });
+    return '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(opts.titulo) + '">' + g + '</svg>';
+  }
+  function legenda(series) {
+    return series.length > 1 ? '<div class="legenda">' + series.map(function (s) { return '<span><i class="sw ' + s.cls + '"></i>' + esc(s.nome) + '</span>'; }).join('') + '</div>' : '';
+  }
+  function media(arr) { return arr.length ? arr.reduce(function (a, b) { return a + b; }, 0) / arr.length : 0; }
+  function sinal(v) { return (v > 0 ? '+' : '') + v; }
+
+  function abrirEvolucao() { renderEvolucao(); mostrar('evolucao'); }
+
+  function renderEvolucao() {
+    var provas = db.hist.filter(function (h) { return h.modo !== 'treino' && h.n; });
+    var aprov = provas.map(function (h) { return Math.round((h.c - h.e) / h.n * 1000) / 10; });
+    var port = itensPortfolio(), recup = port.filter(function (x) { return x.p.rec; }).length;
+    var taxaRec = port.length ? Math.round(recup / port.length * 100) : null;
+    var k = Math.min(3, Math.floor(aprov.length / 2));
+    var melhora = k ? Math.round((media(aprov.slice(-k)) - media(aprov.slice(0, k))) * 10) / 10 : null;
+    var melhor = aprov.length ? Math.max.apply(null, aprov) : null;
+
+    $('#evo-stats').innerHTML =
+      '<div class="stat"><b>' + (taxaRec === null ? '—' : taxaRec + '%') + '</b><small>dos erros separados já recuperados (' + recup + ' de ' + port.length + ')</small></div>' +
+      '<div class="stat"><b class="' + (melhora > 0 ? 'txt-ok' : melhora < 0 ? 'txt-bad' : '') + '">' + (melhora === null ? '—' : sinal(melhora) + ' p.p.') + '</b><small>melhoria geral: ' + (k > 1 ? 'média das ' + k + ' últimas provas × ' + k + ' primeiras' : 'última prova × primeira') + '</small></div>' +
+      '<div class="stat"><b>' + provas.length + '</b><small>simulados e provas feitos</small></div>' +
+      '<div class="stat"><b>' + (melhor === null ? '—' : melhor + '%') + '</b><small>melhor aproveitamento (nota líquida ÷ itens)</small></div>';
+
+    // Gráfico 1: aproveitamento por prova
+    var c1 = $('#evo-chart1');
+    if (provas.length < 2) {
+      c1.innerHTML = '<p class="muted vazio-graf">Faça pelo menos 2 simulados ou provas para ver a curva de evolução.</p>';
+    } else {
+      var yMin = Math.min(0, Math.floor(Math.min.apply(null, aprov) / 25) * 25);
+      var ticks = []; for (var t = yMin; t <= 100; t += 25) ticks.push(t);
+      c1.innerHTML = svgLinhas([{ nome: 'Aproveitamento', cls: 's1', pts: provas.map(function (h, i) {
+        return { y: aprov[i], rot: (h.sim ? 'Simulado ' + h.sim.slice(1) : h.modo === 'prova' ? 'Prova completa' : 'Simulado') + ' · ' +
+          new Date(h.d).toLocaleDateString('pt-BR') + ' · ' + aprov[i] + '% (' + (h.c - h.e) + ' líq. de ' + h.n + ')' };
+      }) }], { yMax: 100, yMin: yMin, ticks: ticks, fmt: function (v) { return v + '%'; }, titulo: 'Aproveitamento por simulado ou prova' });
+    }
+
+    // Gráfico 2: separadas × recuperadas (acumulado por dia)
+    var c2 = $('#evo-chart2');
+    if (!port.length) {
+      c2.innerHTML = '<p class="muted vazio-graf">Sem erros separados ainda.</p>';
+    } else {
+      var dia = function (ts) { var d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); };
+      var dias = unicos(port.map(function (x) { return dia(x.p.desde); }).concat(port.filter(function (x) { return x.p.recEm; }).map(function (x) { return dia(x.p.recEm); }))).sort();
+      var sep = dias.map(function (d) { return port.filter(function (x) { return dia(x.p.desde) <= d; }).length; });
+      var rec = dias.map(function (d) { return port.filter(function (x) { return x.p.recEm && dia(x.p.recEm) <= d; }).length; });
+      var max = Math.max.apply(null, sep), passo = Math.max(1, Math.ceil(max / 4 / 5) * 5), tk = [];
+      for (var v = 0; v <= max + passo - 1; v += passo) tk.push(v);
+      var fd = function (i) { return new Date(dias[i]).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }); };
+      var series = [
+        { nome: 'Separadas', cls: 's2', pts: sep.map(function (v2, i) { return { y: v2, rot: fd(i) + ': ' + v2 + ' separadas (acumulado)' }; }) },
+        { nome: 'Recuperadas', cls: 's1', pts: rec.map(function (v2, i) { return { y: v2, rot: fd(i) + ': ' + v2 + ' recuperadas (acumulado)' }; }) }
+      ];
+      c2.innerHTML = legenda(series) + svgLinhas(series, { yMax: tk[tk.length - 1] || 1, ticks: tk, fmt: function (v3) { return v3; }, xRot: fd, titulo: 'Questões separadas e recuperadas' });
+    }
+
+    // Tabela por disciplina: primeiras × últimas provas
+    var comPor = provas.filter(function (h) { return h.por; });
+    var linhas = ORDEM_DISC.map(function (d) {
+      var hs = comPor.filter(function (h) { return h.por[d] && h.por[d].n; });
+      var pend = port.filter(function (x) { return x.q.disciplina === d && !x.p.rec; }).length;
+      if (!hs.length && !pend) return '';
+      var taxa = function (arr) {
+        var c = 0, n = 0; arr.forEach(function (h) { c += h.por[d].c; n += h.por[d].n; });
+        return n ? Math.round(c / n * 100) : null;
+      };
+      var meio = Math.ceil(hs.length / 2);
+      var ini = hs.length >= 2 ? taxa(hs.slice(0, meio)) : taxa(hs), fim = hs.length >= 2 ? taxa(hs.slice(meio)) : null;
+      var dv = ini !== null && fim !== null ? fim - ini : null;
+      return '<tr><td>' + esc(d) + '</td><td class="c">' + (ini === null ? '—' : ini + '%') + '</td><td class="c">' + (fim === null ? '—' : fim + '%') +
+        '</td><td class="c ' + (dv > 0 ? 'txt-ok' : dv < 0 ? 'txt-bad' : '') + '">' + (dv === null ? '—' : sinal(dv) + ' p.p.') + '</td><td class="c">' + pend + '</td></tr>';
+    }).join('');
+    $('#evo-tabela').innerHTML = linhas ? '<div class="table-wrap"><table><thead><tr><th>Disciplina</th><th>Acerto nas primeiras</th><th>Acerto nas últimas</th><th>Variação</th><th>Pendentes</th></tr></thead><tbody>' + linhas + '</tbody></table></div>' +
+      '<p class="muted nota">"Primeiras" e "últimas" dividem ao meio os seus simulados e provas que tiveram essa disciplina. Acerto = acertos ÷ itens (brancos contam como não acertados).</p>'
+      : '<p class="muted">Faça simulados ou provas para ver a evolução por disciplina.</p>';
+
+    // Tópicos críticos
+    var cont = {};
+    port.filter(function (x) { return !x.p.rec; }).forEach(function (x) { var kk = chaveEstudo(x.q); cont[kk] = (cont[kk] || 0) + 1; });
+    var top = Object.keys(cont).sort(function (a, b) { return cont[b] - cont[a]; }).slice(0, 8);
+    $('#evo-criticos').innerHTML = top.length ? '<ol class="criticos">' + top.map(function (kk) {
+      return '<li><span><b>' + esc(rotuloChave(kk)) + '</b> <span class="muted">· ' + esc(kk.split('|')[0]) + '</span></span><span class="txt-bad">' + cont[kk] + ' pendente' + (cont[kk] === 1 ? '' : 's') + '</span></li>';
+    }).join('') + '</ol>' : '<p class="muted">Nenhum tópico com pendências. 👏</p>';
+  }
+
+  document.querySelectorAll('.topnav [data-view]').forEach(function (a) {
+    a.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      if (S && !$('#view-quiz').hidden && !confirm('Sair da sessão atual? O progresso desta sessão será descartado.')) return;
+      clearInterval(tick); S = null; fecharCiclos();
+      var v = a.dataset.view;
+      if (v === 'portfolio') abrirPortfolio();
+      else if (v === 'evolucao') abrirEvolucao();
+      else { montarStats(); aplicarModo(); mostrar('home'); }
+    });
+  });
 
   /* ---------- Eventos ---------- */
   document.querySelectorAll('.btn-answer').forEach(function (b) {
